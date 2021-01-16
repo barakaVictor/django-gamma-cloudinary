@@ -9,6 +9,18 @@ Detailed documentation is in the "docs" directory.
 
 |Python package| image:: https://github.com/barakaVictor/django-gamma-cloudinary/workflows/Python%20package/badge.svg?branch=main
 
+Maintained?
+~~~~~~~~~~~
+
+Maintained: |Maintenance yes|
+
+.. code:: rst
+
+    |Maintenance yes|
+
+    .. |Maintenance yes| image:: https://img.shields.io/badge/Maintained%3F-yes-green.svg
+       :target: https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity
+
 Quick start
 -----------
 1.  Install the package:
@@ -30,7 +42,7 @@ Quick start
 ::
     INSTALLED_APPS = [
         ...
-	    'cloudinary',
+	'cloudinary',
         'gamma_cloudinary',
     ]
 
@@ -54,6 +66,6 @@ on cloudinary
 5. Set the values for STATICFILES_STORAGE and DEFAULT_FILE_STORAGE settings like so
 ::
 	STATICFILES_STORAGE = 'gamma_cloudinary.storage.StaticCloudinaryStorage.StaticCloudinaryStorage'
-    DEFAULT_FILE_STORAGE = 'gamma_cloudinary.storage.CloudinaryStorage.CloudinaryStorage'
+	DEFAULT_FILE_STORAGE = 'gamma_cloudinary.storage.CloudinaryStorage.CloudinaryStorage'
     
 And you are all set to begin using the storage backend!!
