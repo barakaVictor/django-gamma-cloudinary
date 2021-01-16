@@ -7,7 +7,7 @@ your static and media asset management with the Cloudinary platform.
 
 Detailed documentation is in the "docs" directory.
 
-![Python package](https://github.com/barakaVictor/django-gamma-cloudinary/workflows/Python%20package/badge.svg?branch=main)
+|Python package| image:: https://github.com/barakaVictor/django-gamma-cloudinary/workflows/Python%20package/badge.svg?branch=main
 
 Quick start
 -----------
