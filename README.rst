@@ -7,19 +7,7 @@ your static and media asset management with the Cloudinary platform.
 
 Detailed documentation is in the "docs" directory.
 
-|Python package| image:: https://github.com/barakaVictor/django-gamma-cloudinary/workflows/Python%20package/badge.svg?branch=main
-
-Maintained?
-~~~~~~~~~~~
-
-Maintained: |Maintenance yes|
-
-.. code:: rst
-
-    |Maintenance yes|
-
-    .. |Maintenance yes| image:: https://img.shields.io/badge/Maintained%3F-yes-green.svg
-       :target: https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity
+.. image:: https://github.com/barakaVictor/django-gamma-cloudinary/workflows/Python%20package/badge.svg?branch=main
 
 Quick start
 -----------
