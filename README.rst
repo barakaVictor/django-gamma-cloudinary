@@ -14,11 +14,11 @@ Quick start
     As at now, the package is only available from github so to install make sure to have
     git installed on your machine then run the command below.
 
-    $ pip install --upgrade git+git://github.com/barakaVictor/django-gamma-cloudinary.git
+        $ pip install --upgrade git+git://github.com/barakaVictor/django-gamma-cloudinary.git
 
     In case you use Django ImageField, make sure you have Pillow installed:
 
-    $ pip install Pillow
+        $ pip install Pillow
 
 2. Add "gamma-cloudinary" and "cloudinary" to your INSTALLED_APPS setting like this:
 
