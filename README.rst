@@ -8,6 +8,10 @@ your static and media asset management with the Cloudinary platform.
 Detailed documentation is in the "docs" directory.
 
 .. image:: https://github.com/barakaVictor/django-gamma-cloudinary/workflows/Python%20package/badge.svg?branch=main
+        :target: https://github.com/barakaVictor/django-gamma-cloudinary 
+	
+.. image:: https://img.shields.io/badge/License-BSD%203--Clause-blue.svg 
+	:target: https://opensource.org/licenses/BSD-3-Clause
 
 Quick start
 ----------------
