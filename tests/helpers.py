@@ -5,6 +5,8 @@ from django.contrib.staticfiles.finders import get_finders
 
 def mock_http_response(status=200, content=None, json_data=None, raise_for_status=None):
     """
+    Helper function that builds http reponse mock
+    
     since we typically test a bunch of different
     requests calls for a service, we are going to do
     a lot of mock responses, so its usually a good idea

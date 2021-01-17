@@ -11,6 +11,7 @@ from .helpers import get_cloudinary_resource_type
 class CloudinaryStorage(Storage):
     """
     The base cloudinary storage class
+
     """
 
     def __init__(self, location=None, options=None):
@@ -33,7 +34,8 @@ class CloudinaryStorage(Storage):
         return True
 
     def _open(self, name, mode='rb'):
-        """Mechanism used to open a file
+        """
+        Mechanism used to open a file
 
         Arguments:
         name -- The name of the file to open
@@ -55,13 +57,14 @@ class CloudinaryStorage(Storage):
         return file
 
     def _save(self, name, content):
-        """Saves a file to cloudinary storage
+        """
+        Saves a file to cloudinary storage
 
         Arguments:
         name (string): The name of the file to open
         content (file object): The content of the file
 
-        Returns: 
+        Returns:
         string: the public_id of the file uploaded to cloudinary
         """
         options = {
@@ -95,7 +98,8 @@ class CloudinaryStorage(Storage):
         return cloudinary_resource.url
 
     def upload_path(self, name):
-        """Generate a proper path to use when uploading a file
+        """
+        Generate a proper path to use when uploading a file
 
         Arguments:
         name (string): The name of/path to the file to upload

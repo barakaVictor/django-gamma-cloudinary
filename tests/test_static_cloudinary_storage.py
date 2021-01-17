@@ -9,7 +9,7 @@ class StaticCloudinaryStorageTestCase(SimpleTestCase):
 
     def setUp(self):
         self.storage = StaticCloudinaryStorage()
-    
+
     @override_settings(STATIC_ROOT=None)
     def test_class_instantiation(self):
         instance = StaticCloudinaryStorage()

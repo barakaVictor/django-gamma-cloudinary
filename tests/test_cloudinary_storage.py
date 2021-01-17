@@ -88,10 +88,3 @@ class CloudinaryStorageTestCase(SimpleTestCase):
             status=200,
             )
         self.assertTrue(self.storage.exists(file_name))
-
-
-
-
-
-
-        
