@@ -3,9 +3,7 @@ from .CloudinaryStorage import CloudinaryStorage
 from .RewriteToCloudinaryUrlMixin import RewriteToCloudinaryUrlMixin
 
 class StaticCloudinaryStorage(RewriteToCloudinaryUrlMixin, CloudinaryStorage):
-    """
-    Cloudinary storage class for static files
-    """
+    """Cloudinary storage class for static files"""
 
     def __init__(self, location=None, *args, **kwargs):
         if location is None:
@@ -15,7 +13,4 @@ class StaticCloudinaryStorage(RewriteToCloudinaryUrlMixin, CloudinaryStorage):
         # is empty, so we restore the empty value.
         if not location:
             self.location = None
-
-
-    
-   
+               
