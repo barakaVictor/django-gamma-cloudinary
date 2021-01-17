@@ -9,7 +9,10 @@ your static and media asset management with the Cloudinary platform.
         :target: https://github.com/barakaVictor/django-gamma-cloudinary 
 	
 .. image:: https://img.shields.io/badge/License-BSD%203--Clause-blue.svg 
-	    :target: https://opensource.org/licenses/BSD-3-Clause
+	:target: https://opensource.org/licenses/BSD-3-Clause
+
+.. image:: https://app.codacy.com/project/badge/Coverage/46f9e273015842829ba79cff86b9d409    
+	:target: https://www.codacy.com/gh/barakaVictor/django-gamma-cloudinary/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=barakaVictor/django-gamma-cloudinary&amp;utm_campaign=Badge_Coverage
 
 Quick start
 ----------------
