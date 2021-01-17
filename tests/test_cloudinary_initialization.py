@@ -1,4 +1,3 @@
-import os
 from unittest import mock
 from django.conf import settings
 from django.test import SimpleTestCase, override_settings
@@ -10,10 +9,10 @@ class CloudinarySetUpTestCase(SimpleTestCase):
     @override_settings(CLOUDINARY_STORAGE=None)
     def test_initialization_without_CLOUDINARY_STORAGE_setting(self):
         del settings.CLOUDINARY_STORAGE
-        with self.assertRaisesMessage(ImproperlyConfigured, 'In order to use cloudinary storage, you need to provide ' 
-                                                            'CLOUDINARY_STORAGE dictionary with CLOUD_NAME, API_SECRET ' 
-                                                            'and API_KEY in the django settings module or set CLOUDINARY_URL' 
-                                                            '(or CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET) ' 
+        with self.assertRaisesMessage(ImproperlyConfigured, 'In order to use cloudinary storage, you need to provide '
+                                                            'CLOUDINARY_STORAGE dictionary with CLOUD_NAME, API_SECRET '
+                                                            'and API_KEY in the django settings module or set CLOUDINARY_URL'
+                                                            '(or CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET) '
                                                             'environment variables).'):
             setup_cloudinary()
 

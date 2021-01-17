@@ -4,28 +4,13 @@ from unittest import mock
 from django.apps import apps
 from django.conf import settings
 from django.test import SimpleTestCase, override_settings
-from django.contrib.staticfiles.finders import get_finders
 from gamma_cloudinary.storage.StaticCloudinaryStorage import StaticCloudinaryStorage
+from tests.helpers import find_files
 
 class StaticCloudinaryStorageTestCase(SimpleTestCase):
 
     def setUp(self):
         self.storage = StaticCloudinaryStorage()
-    
-    def find_files(self):
-        ignore_patterns = list({os.path.normpath(p) for p in apps.get_app_config('staticfiles').ignore_patterns})
-        found_files = {}
-        for finder in get_finders():
-            for path, storage in finder.list(ignore_patterns):
-                # Prefix the relative path if the source storage contains it
-                if getattr(storage, 'prefix', None):
-                    prefixed_path = os.path.join(storage.prefix, path)
-                else:
-                    prefixed_path = path
-
-                if prefixed_path not in found_files:
-                    found_files[prefixed_path] = (storage, path)
-        return found_files
     
     @override_settings(STATIC_ROOT=None)
     def test_class_instantiation(self):
@@ -37,9 +22,9 @@ class StaticCloudinaryStorageTestCase(SimpleTestCase):
     def test_post_process(self, mock_save):
 
         #find static files to pass to the post_process method
-        files = self.find_files()
+        files = find_files()
 
-        #mock the _save method of CloudinaryStorage class to avoid 
+        #mock the _save method of CloudinaryStorage class to avoid
         #making http requests to cloudinary
         mock_save.side_effect = files.keys()
 
@@ -54,7 +39,7 @@ class StaticCloudinaryStorageTestCase(SimpleTestCase):
         converter = self.storage.url_converter(name)
 
         self.assertEqual(
-            pattern.sub(converter, content), 
+            pattern.sub(converter, content),
             'url("https://res.cloudinary.com/test/raw/upload/v1/gamma/staticfiles/css/random.css?t=56#test")'
             )
 
@@ -64,7 +49,7 @@ class StaticCloudinaryStorageTestCase(SimpleTestCase):
         content = 'url(/static/css/random.css?t=56#test)'
         converter = self.storage.url_converter(name)
         self.assertEqual(
-            pattern.sub(converter, content), 
+            pattern.sub(converter, content),
             'url("https://res.cloudinary.com/test/raw/upload/v1/gamma/staticfiles/css/random.css?t=56#test")'
             )
 
@@ -75,7 +60,7 @@ class StaticCloudinaryStorageTestCase(SimpleTestCase):
         converter = self.storage.url_converter(name)
 
         self.assertEqual(
-            pattern.sub(converter, content), 
+            pattern.sub(converter, content),
             'url(https://gammaadvocates.com/staticfiles/css/random.css?t=56#test)'
             )
 
