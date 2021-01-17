@@ -15,7 +15,4 @@ class StaticCloudinaryStorage(RewriteToCloudinaryUrlMixin, CloudinaryStorage):
         # is empty, so we restore the empty value.
         if not location:
             self.location = None
-
-
-    
-   
+               

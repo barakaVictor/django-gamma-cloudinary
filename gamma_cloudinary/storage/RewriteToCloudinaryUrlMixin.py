@@ -10,12 +10,11 @@ from django.core.files.base import ContentFile
 class RewriteToCloudinaryUrlMixin:
     """
     Provides mechanism to rewrite relative paths referencing other
-    static assets to their cloudinary urls once these resources are 
+    static assets to their cloudinary urls once these resources are
     uploaded to cloudinary by collectstatic. Without this, the paths
-    would end up being broken as on cloudinary we no longer use the relative 
+    would end up being broken as on cloudinary we no longer use the relative
     paths as is the case when developing locally.
     """
-
     default_template = """url("%s")"""
     patterns = (
         (
@@ -88,7 +87,7 @@ class RewriteToCloudinaryUrlMixin:
 
             def converter(matchobj):
                 """
-                Convert the matched URL to a URL of the referenced resource in 
+                Convert the matched URL to a URL of the referenced resource in
                 cloudinary.
 
                 This requires figuring out which files the matched URL resolves
