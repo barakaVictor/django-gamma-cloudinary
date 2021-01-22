@@ -7,8 +7,12 @@ from gamma_cloudinary.storage.helpers import get_cloudinary_resource_type
 register = template.Library()
 
 @register.simple_tag(name='gamma_cloudinary_static', takes_context=True)
-def gamma_cloudinary_static(context, resource_name, options_dict={}, **options):
-    options = dict(options_dict, **options)
+def gamma_cloudinary_static(context, resource_name, options_dict=None, **options):
+
+    if options_dict is None:
+        options = dict(**options)
+    else:
+        options = dict(options_dict, **options)
     try:
         if context['request'].is_secure() and 'secure' not in options:
             options['secure'] = True

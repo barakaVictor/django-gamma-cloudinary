@@ -9,6 +9,7 @@ from .helpers import get_cloudinary_resource_type
 
 @deconstructible
 class CloudinaryStorage(Storage):
+
     """
     The base cloudinary storage class
 
@@ -26,6 +27,17 @@ class CloudinaryStorage(Storage):
         return os.path.normpath(location).replace('\\', '/')
 
     def exists(self, name):
+        """
+        Check wether a file exists in storage
+
+        Parameters:
+        name(string): The name of the target file to check for.
+
+        Returns:
+        True if the file does exist and False if it does not. 
+        It raises an exception incase a http error other than 404 
+        is encountered while querying Cloudinary.
+        """
         url = self.url(name)
         response = requests.head(url)
         if response.status_code == 404:
@@ -71,7 +83,8 @@ class CloudinaryStorage(Storage):
             'use_filename': True,
             'resource_type': get_cloudinary_resource_type(name),
             'unique_filename': False,
-            'overwrite': True
+            'overwrite': True,
+            'invalidate': True
             }
         folder, name = os.path.split(self.upload_path(name))
         if folder:
@@ -91,6 +104,16 @@ class CloudinaryStorage(Storage):
     #lesson learnt -> prefer to specify the resource_type when using the SDK as
     #opposed to using the auto option
     def url(self, name):
+        """
+        Get the full cloudinary url to a resource
+
+        Parameters:
+        name(string): The name of the target file used as the public_id when querying Cloudinary
+
+        Returns:
+        string: The url to use to access the target resource on Cloudinary
+        
+        """
         cloudinary_resource = cloudinary.CloudinaryResource(
             self.upload_path(name),
             default_resource_type=get_cloudinary_resource_type(name)
@@ -101,7 +124,7 @@ class CloudinaryStorage(Storage):
         """
         Generate a proper path to use when uploading a file
 
-        Arguments:
+        Parameters:
         name (string): The name of/path to the file to upload
 
         Returns:
