@@ -34,8 +34,8 @@ class CloudinaryStorage(Storage):
         name(string): The name of the target file to check for.
 
         Returns:
-        True if the file does exist and False if it does not. 
-        It raises an exception incase a http error other than 404 
+        True if the file does exist and False if it does not.
+        It raises an exception incase a http error other than 404
         is encountered while querying Cloudinary.
         """
         url = self.url(name)
