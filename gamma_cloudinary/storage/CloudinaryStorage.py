@@ -1,10 +1,15 @@
 import os
 import requests
 import cloudinary
+from urllib.parse import urljoin
+
 from django.conf import settings
 from django.core.files.storage import Storage
 from django.core.files.base import ContentFile
 from django.utils.deconstruct import deconstructible
+from django.utils.encoding import filepath_to_uri
+from django.utils.functional import cached_property
+from django.core.signals import setting_changed
 from .helpers import get_cloudinary_resource_type
 
 @deconstructible
@@ -15,16 +20,35 @@ class CloudinaryStorage(Storage):
 
     """
 
-    def __init__(self, location=None, options=None):
+    def __init__(self, location=None, base_url=None, options=None):
         self._location = location
+        self._base_url = base_url
+        setting_changed.connect(self._clear_cached_properties)
+    
+    def _clear_cached_properties(self, setting, **kwargs):
+        """Reset setting based property values."""
+        if setting == 'MEDIA_ROOT':
+            self.__dict__.pop('base_location', None)
+            self.__dict__.pop('location', None)
+        elif setting == 'MEDIA_URL':
+            self.__dict__.pop('base_url', None)
 
     def _value_or_setting(self, value, setting):
         return setting if value is None else value
 
-    @property
+    @cached_property
     def base_location(self):
-        location = self._value_or_setting(self._location, settings.MEDIA_ROOT)
-        return os.path.normpath(location).replace('\\', '/')
+        return self._value_or_setting(self._location, settings.MEDIA_ROOT)
+    
+    @cached_property
+    def location(self):
+        return os.path.abspath(self.base_location)
+    
+    @cached_property
+    def base_url(self):
+        if self._base_url is not None and not self._base_url.endswith('/'):
+            self._base_url += '/'
+        return self._value_or_setting(self._base_url, settings.MEDIA_URL)
 
     def exists(self, name):
         """
@@ -34,11 +58,11 @@ class CloudinaryStorage(Storage):
         name(string): The name of the target file to check for.
 
         Returns:
-        True if the file does exist and False if it does not.
-        It raises an exception incase a http error other than 404
+        True if the file does exist and False if it does not. 
+        It raises an exception incase a http error other than 404 
         is encountered while querying Cloudinary.
         """
-        url = self.url(name)
+        url = self.url(name, local=False)
         response = requests.head(url)
         if response.status_code == 404:
             return False
@@ -56,7 +80,7 @@ class CloudinaryStorage(Storage):
         returns a File object or raises an exception
         if the file does not exist
         """
-        url = self.url(name)
+        url = self.url(name, local=False)
         response = requests.get(url)
 
         try:
@@ -103,7 +127,7 @@ class CloudinaryStorage(Storage):
 
     #lesson learnt -> prefer to specify the resource_type when using the SDK as
     #opposed to using the auto option
-    def url(self, name):
+    def url(self, name, **options):
         """
         Get the full cloudinary url to a resource
 
@@ -114,11 +138,20 @@ class CloudinaryStorage(Storage):
         string: The url to use to access the target resource on Cloudinary
         
         """
-        cloudinary_resource = cloudinary.CloudinaryResource(
-            self.upload_path(name),
-            default_resource_type=get_cloudinary_resource_type(name)
-        )
-        return cloudinary_resource.url
+        options = dict(**options)
+        local_url = options["local"] if "local" in options.keys() else settings.DEBUG 
+        if self.base_url is None:
+            raise ValueError("This file is not accessible via a URL.")
+            
+        file_path = self.upload_path(name)
+        if local_url:
+            return file_path
+        else:
+            cloudinary_resource = cloudinary.CloudinaryResource(
+                file_path.lstrip('/'),
+                default_resource_type=get_cloudinary_resource_type(name)
+            )
+            return cloudinary_resource.url
 
     def upload_path(self, name):
         """
@@ -135,7 +168,7 @@ class CloudinaryStorage(Storage):
         end up in a folder as indicated by the STATIC_ROOT value in the django settings module,
         same case for media files
         """
-        prefix = self.base_location if self.base_location.endswith('/') else self.base_location + '/'
-        if not name.startswith(prefix):
-            name = prefix + name
-        return str(name).replace('\\', '/')
+        url = filepath_to_uri(name)
+        if url is not None:
+            url = url.lstrip('/')
+        return urljoin(self.base_url, url)
