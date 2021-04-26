@@ -2,6 +2,7 @@ import os
 import requests
 import cloudinary
 from urllib.parse import urljoin
+from operator import itemgetter
 
 from django.conf import settings
 from django.core.files.storage import Storage
@@ -43,6 +44,17 @@ class CloudinaryStorage(Storage):
     @cached_property
     def location(self):
         return os.path.abspath(self.base_location)
+
+    @property
+    def remote_base_location(self):
+        location = ""
+        if 'BASE_STORAGE_LOCATION' in settings.CLOUDINARY_STORAGE.keys():
+            location = itemgetter('BASE_STORAGE_LOCATION')(settings.CLOUDINARY_STORAGE)  
+        elif hasattr(settings, 'BASE_DIR'):
+            location = os.path.basename(settings.BASE_DIR) 
+        if location.endswith("/") == False:
+            location += "/"
+        return location
     
     @cached_property
     def base_url(self):
@@ -171,4 +183,7 @@ class CloudinaryStorage(Storage):
         url = filepath_to_uri(name)
         if url is not None:
             url = url.lstrip('/')
-        return urljoin(self.base_url, url)
+        prefixed_url = urljoin(self.base_url, url)
+        if settings.DEBUG == True:
+            return prefixed_url
+        return urljoin(self.remote_base_location, prefixed_url.lstrip('/'))
