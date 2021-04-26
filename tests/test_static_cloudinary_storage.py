@@ -14,7 +14,7 @@ class StaticCloudinaryStorageTestCase(SimpleTestCase):
     def test_class_instantiation(self):
         instance = StaticCloudinaryStorage()
         self.assertTrue(instance.location==None)
-        self.assertTrue(instance.base_location==settings.MEDIA_ROOT.replace('\\', '/'))
+        self.assertTrue(instance.base_location==settings.STATIC_ROOT)
 
     @mock.patch('gamma_cloudinary.storage.CloudinaryStorage.CloudinaryStorage._save')
     def test_post_process(self, mock_save):
@@ -38,7 +38,7 @@ class StaticCloudinaryStorageTestCase(SimpleTestCase):
 
         self.assertEqual(
             pattern.sub(converter, content),
-            'url("https://res.cloudinary.com/test/raw/upload/v1/gamma/staticfiles/css/random.css?t=56#test")'
+            'url("https://res.cloudinary.com/test/raw/upload/v1/static/css/random.css?t=56#test")'
             )
 
     def test_url_converter_correctly_replaces_relative_static_urls_without_leading_slash_with_cloudinary_urls(self):
@@ -48,7 +48,7 @@ class StaticCloudinaryStorageTestCase(SimpleTestCase):
         converter = self.storage.url_converter(name)
         self.assertEqual(
             pattern.sub(converter, content),
-            'url("https://res.cloudinary.com/test/raw/upload/v1/gamma/staticfiles/css/random.css?t=56#test")'
+            'url("https://res.cloudinary.com/test/raw/upload/v1/static/css/random.css?t=56#test")'
             )
 
     def test_url_converter_ignores_absolute_urls(self):
