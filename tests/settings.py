@@ -49,5 +49,6 @@ CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'test',
     'API_KEY': 'test_api_key',
     'API_SECRET': 'test_api_secret',
+    'BASE_STORAGE_LOCATION': '/test/',
     'SECURE': True
 }
