@@ -5,7 +5,7 @@ from gamma_cloudinary.config import setup_cloudinary
 
 class CloudinarySetUpTestCase(SimpleTestCase):
 
-    @override_settings(CLOUDINARY_STORAGE=None)
+    @override_settings()
     def test_initialization_without_CLOUDINARY_STORAGE_setting(self):
         del settings.CLOUDINARY_STORAGE
         with self.assertRaisesMessage(ImproperlyConfigured, 'In order to use cloudinary storage, you need to provide '

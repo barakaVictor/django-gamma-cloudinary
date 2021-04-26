@@ -5,12 +5,13 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
 #Execute setup code for cloudinary configuration
-
 def setup_cloudinary():
     if settings.configured:
         try:
             #check for the existence of CLOUDINARY_STORAGE object in django settings module
-            cloudinary_settings = getattr(settings, 'CLOUDINARY_STORAGE', dict())
+            cloudinary_settings = getattr(settings, 'CLOUDINARY_STORAGE')
+
+            #print(cloudinary_settings)
 
             #if CLOUDINARY_STORAGE exists check for the minimum required keys to get cloudinary up and running
             itemgetter('CLOUD_NAME', 'API_KEY', 'API_SECRET')(cloudinary_settings)

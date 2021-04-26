@@ -34,11 +34,11 @@ TEMPLATES = [
 ]
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join('gamma', 'media')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_FILE_STORAGE = 'gamma_cloudinary.storage.CloudinaryStorage.CloudinaryStorage'
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join('gamma', 'staticfiles')
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_STORAGE = 'gamma_cloudinary.storage.StaticCloudinaryStorage.StaticCloudinaryStorage'
 
 STATICFILES_DIRS = [
