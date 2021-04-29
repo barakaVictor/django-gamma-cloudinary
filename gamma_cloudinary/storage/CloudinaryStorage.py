@@ -79,11 +79,10 @@ class CloudinaryStorage(Storage):
         is encountered while querying Cloudinary.
         """
         url = self.url(name, local=False)
-        print(url)
         response = requests.head(url)
         if response.status_code == 404:
             return False
-        #response.raise_for_status()
+        response.raise_for_status()
         return True
 
     def _open(self, name, mode='rb'):
