@@ -9,10 +9,10 @@ class CloudinaryStorageTestCase(SimpleTestCase):
     def setUp(self):
         self.storage = CloudinaryStorage()
 
-    def test_upload_path(self):
+    def test_custom_path(self):
         filename = 'css/test.css'
-        prefixed_name = self.storage.upload_path(filename)
-        self.assertTrue(prefixed_name.startswith(self.storage.remote_base_location))
+        prefixed_name = self.storage.custom_path(filename)
+        self.assertTrue(prefixed_name.startswith(self.storage.base_url.lstrip('/')))
 
     @patch('gamma_cloudinary.storage.CloudinaryStorage.cloudinary.CloudinaryResource')
     def test_url(self, mocked_resource):

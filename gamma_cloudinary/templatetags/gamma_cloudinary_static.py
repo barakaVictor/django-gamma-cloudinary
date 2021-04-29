@@ -19,7 +19,7 @@ def gamma_cloudinary_static(context, resource_name, options_dict=None, **options
     except KeyError:
         pass
     if not isinstance(resource_name, CloudinaryResource):
-        resource_path = staticfiles_storage.upload_path(resource_name)
+        resource_path = staticfiles_storage.custom_path(resource_name)
         resource = CloudinaryResource(
             resource_path,
             default_resource_type=get_cloudinary_resource_type(resource_path)
