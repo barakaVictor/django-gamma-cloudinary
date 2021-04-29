@@ -7,6 +7,7 @@ from operator import itemgetter
 from django.conf import settings
 from django.core.files.storage import Storage
 from django.core.files.base import ContentFile
+from django.utils._os import safe_join
 from django.utils.deconstruct import deconstructible
 from django.utils.encoding import filepath_to_uri
 from django.utils.functional import cached_property
@@ -123,10 +124,14 @@ class CloudinaryStorage(Storage):
             'invalidate': True
             }
         folder, name = os.path.split(self.upload_path(name))
+        print(folder, name)
         if folder:
             options['folder'] = folder
         response = cloudinary.uploader.upload(content, **options)
         return response['public_id']
+    
+    def path(self, name):
+        return self.url(name, local=False)
 
     def delete(self, name):
         assert name, "The name argument is not allowed to be empty."
