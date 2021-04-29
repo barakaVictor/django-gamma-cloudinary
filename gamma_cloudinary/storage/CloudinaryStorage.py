@@ -3,11 +3,9 @@ import requests
 import cloudinary
 from urllib.parse import urljoin
 from operator import itemgetter
-
 from django.conf import settings
 from django.core.files.storage import Storage
 from django.core.files.base import ContentFile
-from django.utils._os import safe_join
 from django.utils.deconstruct import deconstructible
 from django.utils.encoding import filepath_to_uri
 from django.utils.functional import cached_property
@@ -47,21 +45,26 @@ class CloudinaryStorage(Storage):
         return os.path.abspath(self.base_location)
 
     @property
-    def remote_base_location(self):
-        location = ""
+    def storage_folder(self):
+        folder = ""
         if 'BASE_STORAGE_LOCATION' in settings.CLOUDINARY_STORAGE.keys():
-            location = itemgetter('BASE_STORAGE_LOCATION')(settings.CLOUDINARY_STORAGE)  
+            folder = itemgetter('BASE_STORAGE_LOCATION')(settings.CLOUDINARY_STORAGE)  
         elif hasattr(settings, 'BASE_DIR'):
-            location = os.path.basename(settings.BASE_DIR) 
-        if location.endswith("/") == False:
-            location += "/"
-        return location
-    
+            folder = os.path.basename(settings.BASE_DIR) 
+        if folder.startswith("/") == False:
+            folder = "/"+ folder
+        if folder.endswith("/") == False:
+            folder += "/"
+        return folder 
+
     @cached_property
     def base_url(self):
         if self._base_url is not None and not self._base_url.endswith('/'):
-            self._base_url += '/'
-        return self._value_or_setting(self._base_url, settings.MEDIA_URL)
+            self._base_url += "/"
+        return urljoin(
+            self.storage_folder, 
+            self._value_or_setting(self._base_url, settings.MEDIA_URL).lstrip("/")
+            )
 
     def exists(self, name):
         """
@@ -76,10 +79,11 @@ class CloudinaryStorage(Storage):
         is encountered while querying Cloudinary.
         """
         url = self.url(name, local=False)
+        print(url)
         response = requests.head(url)
         if response.status_code == 404:
             return False
-        response.raise_for_status()
+        #response.raise_for_status()
         return True
 
     def _open(self, name, mode='rb'):
@@ -123,19 +127,15 @@ class CloudinaryStorage(Storage):
             'overwrite': True,
             'invalidate': True
             }
-        folder, name = os.path.split(self.upload_path(name))
-        print(folder, name)
+        folder, name = os.path.split(self.custom_path(name, local=False))
         if folder:
             options['folder'] = folder
         response = cloudinary.uploader.upload(content, **options)
         return response['public_id']
-    
-    def path(self, name):
-        return self.url(name, local=False)
 
     def delete(self, name):
         assert name, "The name argument is not allowed to be empty."
-        name = self.upload_path(name)
+        name = self.custom_path(name, local=False)
         options = {
             'invalidate': True
         }
@@ -154,23 +154,23 @@ class CloudinaryStorage(Storage):
         Returns:
         string: The url to use to access the target resource on Cloudinary
         
-        """
-        options = dict(**options)
-        local_url = options["local"] if "local" in options.keys() else settings.DEBUG 
-        if self.base_url is None:
-            raise ValueError("This file is not accessible via a URL.")
-            
-        file_path = self.upload_path(name)
-        if local_url:
-            return file_path
-        else:
-            cloudinary_resource = cloudinary.CloudinaryResource(
-                file_path.lstrip('/'),
-                default_resource_type=get_cloudinary_resource_type(name)
-            )
-            return cloudinary_resource.url
+        """  
+        local = options['local'] if 'local' in options.keys() else settings.DEBUG   
+        if local:
+            path = self.custom_path(name)
+            if self._base_url is not None:
+                if path.startswith(self._base_url.lstrip('/')):
+                    pass
+                else:
+                    path = urljoin(self._base_url, self.custom_path(name))
+            return path  
+        cloudinary_resource = cloudinary.CloudinaryResource(
+            self.custom_path(name, local=False),
+            default_resource_type=get_cloudinary_resource_type(name)
+        )
+        return cloudinary_resource.url
 
-    def upload_path(self, name):
+    def custom_path(self, name, local=settings.DEBUG):
         """
         Generate a proper path to use when uploading a file
 
@@ -187,8 +187,26 @@ class CloudinaryStorage(Storage):
         """
         url = filepath_to_uri(name)
         if url is not None:
-            url = url.lstrip('/')
-        prefixed_url = urljoin(self.base_url, url)
-        if settings.DEBUG == True:
-            return prefixed_url
-        return urljoin(self.remote_base_location, prefixed_url.lstrip('/'))
+            if local:
+                url = url[len(self.storage_folder.lstrip('/').rstrip('/')):] if url.startswith(self.storage_folder.lstrip('/')) else url
+                if not url.startswith('/'):
+                    url = '/'+url
+                if not url.startswith(self.base_url[len(self.storage_folder.rstrip('/')):]):
+                    url = urljoin(self.base_url[len(self.storage_folder.rstrip('/')):], url.lstrip('/'))
+                if self.get_local_file_name(url) is not None:
+                    url = self.get_local_file_name(url)
+            else:
+                if not url.startswith(self.base_url.lstrip('/')): 
+                    url = urljoin(
+                        self.base_url, 
+                        url.lstrip('/')
+                    ).lstrip('/')
+        return url
+    
+    def get_local_file_name(self, path):
+        folder, name = os.path.split(path)
+        for root, dirs, files in os.walk(os.path.normpath(os.path.join(settings.BASE_DIR, folder.lstrip('/')))):
+            for file_name in files:
+                if file_name.startswith(name):
+                    return os.path.join(folder, file_name)
+
