@@ -106,7 +106,6 @@ class RewriteToCloudinaryUrlMixin:
                 if url_parts.path.startswith('/'):
                     assert url_parts.path.startswith(settings.STATIC_URL)
                     target_name = url_parts.path[len(settings.STATIC_URL):]
-                    
                 else:
                     # We're using the posixpath module to mix paths and URLs conveniently.
                     source_name = name if os.sep == '/' else name.replace(os.sep, '/')

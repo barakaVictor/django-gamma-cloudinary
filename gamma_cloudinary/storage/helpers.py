@@ -1,5 +1,7 @@
 import os
+#import magic
 import mimetypes
+
 
 def get_cloudinary_resource_type(name):
     """
@@ -32,4 +34,7 @@ def get_cloudinary_resource_type(name):
         else:
             return 'raw'
     else:
+        #with open(name, 'r') as myfile:
+            #guess = magic.from_file(myfile)
+        #    print(myfile.readlines())
         return 'image'
