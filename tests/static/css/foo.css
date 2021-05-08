@@ -1,1 +1,5 @@
-@import url('/static/cached/styles.css?spam=eggs')
+@import url('/static/cached/styles.css?spam=eggs');
+
+.background-image{
+    background-image: url('../images/placeholder.png');
+}
