@@ -38,6 +38,17 @@ class RewriteToCloudinaryUrlMixin:
                 compiled = re.compile(pattern, re.IGNORECASE)
                 self._patterns.setdefault(extension, []).append((compiled, template))
     
+    def file_hash(self, name, content=None):
+        """
+        Return a hash of the file with the given name and optional content.
+        """
+        if content is None:
+            return None
+        md5 = hashlib.md5()
+        for chunk in content.chunks():
+            md5.update(chunk)
+        return md5.hexdigest()[:12]
+
     def post_process(self, paths, dry_run=False, **options):
        
         # build a list of adjustable files
@@ -102,7 +113,7 @@ class RewriteToCloudinaryUrlMixin:
                     return matched
 
                 url_parts = urlparse(url)
-
+                print(url_parts.path, settings.STATIC_URL)
                 if url_parts.path.startswith('/'):
                     assert url_parts.path.startswith(settings.STATIC_URL)
                     target_name = url_parts.path[len(settings.STATIC_URL):]
