@@ -113,7 +113,6 @@ class RewriteToCloudinaryUrlMixin:
                     return matched
 
                 url_parts = urlparse(url)
-                print(url_parts.path, settings.STATIC_URL)
                 if url_parts.path.startswith('/'):
                     assert url_parts.path.startswith(settings.STATIC_URL)
                     target_name = url_parts.path[len(settings.STATIC_URL):]

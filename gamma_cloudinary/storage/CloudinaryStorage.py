@@ -12,6 +12,11 @@ from django.utils.functional import cached_property
 from django.core.signals import setting_changed
 from .helpers import get_cloudinary_resource_type
 
+import logging
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
+
 @deconstructible
 class CloudinaryStorage(Storage):
 
@@ -61,10 +66,10 @@ class CloudinaryStorage(Storage):
     def base_url(self):
         if self._base_url is not None and not self._base_url.endswith('/'):
             self._base_url += "/"
-        return urljoin(
+        return os.path.join(
             self.storage_folder, 
             self._value_or_setting(self._base_url, settings.MEDIA_URL).lstrip("/")
-            )
+            ).replace('\\', '/')
 
     def exists(self, name):
         """
@@ -154,17 +159,11 @@ class CloudinaryStorage(Storage):
         string: The url to use to access the target resource on Cloudinary
         
         """  
-        local = options['local'] if 'local' in options.keys() else settings.DEBUG   
+        local = options['local'] if 'local' in options.keys() else settings.DEBUG  
         if local:
-            path = self.custom_path(name)
-            if self._base_url is not None:
-                if path.startswith(self._base_url.lstrip('/')):
-                    pass
-                else:
-                    path = urljoin(self._base_url, self.custom_path(name))
-            return path  
+            return self.custom_path(name)  
         cloudinary_resource = cloudinary.CloudinaryResource(
-            self.custom_path(name, local=False),
+            self.custom_path(name, local=False).lstrip('/'),
             default_resource_type=get_cloudinary_resource_type(name)
         )
         return cloudinary_resource.url
@@ -184,28 +183,13 @@ class CloudinaryStorage(Storage):
         end up in a folder as indicated by the STATIC_ROOT value in the django settings module,
         same case for media files
         """
-        url = filepath_to_uri(name)
+        url = filepath_to_uri(name).lstrip('/')
+        if local:
+            prefix = self.base_url[len(self.storage_folder.rstrip('/')):]
+        else:
+            prefix = self.base_url
         if url is not None:
-            if local:
-                url = url[len(self.storage_folder.lstrip('/').rstrip('/')):] if url.startswith(self.storage_folder.lstrip('/')) else url
-                if not url.startswith('/'):
-                    url = '/'+url
-                if not url.startswith(self.base_url[len(self.storage_folder.rstrip('/')):]):
-                    url = urljoin(self.base_url[len(self.storage_folder.rstrip('/')):], url.lstrip('/'))
-                if self.get_local_file_name(url) is not None:
-                    url = self.get_local_file_name(url)
-            else:
-                if not url.startswith(self.base_url.lstrip('/')): 
-                    url = urljoin(
-                        self.base_url, 
-                        url.lstrip('/')
-                    ).lstrip('/')
+            if not url.startswith(prefix):
+                url = os.path.join(prefix, url)
         return url
-    
-    def get_local_file_name(self, path):
-        folder, name = os.path.split(path)
-        for root, dirs, files in os.walk(os.path.normpath(os.path.join(settings.BASE_DIR, folder.lstrip('/')))):
-            for file_name in files:
-                if file_name.startswith(name):
-                    return os.path.join(folder, file_name)
 
