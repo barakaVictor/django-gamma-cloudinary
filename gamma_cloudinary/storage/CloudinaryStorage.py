@@ -1,7 +1,6 @@
 import os
 import requests
 import cloudinary
-from urllib.parse import urljoin
 from operator import itemgetter
 from django.conf import settings
 from django.core.files.storage import Storage
@@ -11,11 +10,6 @@ from django.utils.encoding import filepath_to_uri
 from django.utils.functional import cached_property
 from django.core.signals import setting_changed
 from .helpers import get_cloudinary_resource_type
-
-import logging
-
-# Get an instance of a logger
-logger = logging.getLogger(__name__)
 
 @deconstructible
 class CloudinaryStorage(Storage):
@@ -189,7 +183,7 @@ class CloudinaryStorage(Storage):
         else:
             prefix = self.base_url
         if url is not None:
-            if not url.startswith(prefix):
+            if not url.startswith(prefix.lstrip('/')):
                 url = os.path.join(prefix, url)
         return url
 
