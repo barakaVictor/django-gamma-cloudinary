@@ -9,7 +9,7 @@ from django.utils.deconstruct import deconstructible
 from django.utils.encoding import filepath_to_uri
 from django.utils.functional import cached_property
 from django.core.signals import setting_changed
-from .helpers import get_cloudinary_resource_type
+from .helpers import get_cloudinary_resource_type, storage_folder
 
 @deconstructible
 class CloudinaryStorage(Storage):
@@ -43,25 +43,13 @@ class CloudinaryStorage(Storage):
     def location(self):
         return os.path.abspath(self.base_location)
 
-    @property
-    def storage_folder(self):
-        folder = ""
-        if 'BASE_STORAGE_LOCATION' in settings.CLOUDINARY_STORAGE.keys():
-            folder = itemgetter('BASE_STORAGE_LOCATION')(settings.CLOUDINARY_STORAGE)  
-        elif hasattr(settings, 'BASE_DIR'):
-            folder = os.path.basename(settings.BASE_DIR) 
-        if folder.startswith("/") == False:
-            folder = "/"+ folder
-        if folder.endswith("/") == False:
-            folder += "/"
-        return folder 
-
+    
     @cached_property
     def base_url(self):
         if self._base_url is not None and not self._base_url.endswith('/'):
             self._base_url += "/"
         return os.path.join(
-            self.storage_folder, 
+            storage_folder(), 
             self._value_or_setting(self._base_url, settings.MEDIA_URL).lstrip("/")
             ).replace('\\', '/')
 
@@ -179,7 +167,7 @@ class CloudinaryStorage(Storage):
         """
         url = filepath_to_uri(name).lstrip('/')
         if local:
-            prefix = self.base_url[len(self.storage_folder.rstrip('/')):]
+            prefix = self.base_url[len(storage_folder().rstrip('/')):]
         else:
             prefix = self.base_url
         if url is not None:
