@@ -167,11 +167,13 @@ class CloudinaryStorage(Storage):
         """
         url = filepath_to_uri(name).lstrip('/')
         if local:
-            prefix = self.base_url[len(storage_folder().rstrip('/')):]
+            prefix = self.base_url[len(self.storage_folder.rstrip('/')):]
+            if url.lstrip('/').startswith(self.storage_folder.lstrip('/')):
+                url = url[len(self.storage_folder.lstrip('/').rstrip('/')):]
         else:
             prefix = self.base_url
         if url is not None:
-            if not url.startswith(prefix.lstrip('/')):
+            if not url.lstrip('/').startswith(prefix.lstrip('/')):
                 url = os.path.join(prefix, url)
         return url
 
