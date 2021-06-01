@@ -9,7 +9,7 @@ from django.utils.deconstruct import deconstructible
 from django.utils.encoding import filepath_to_uri
 from django.utils.functional import cached_property
 from django.core.signals import setting_changed
-from .helpers import get_cloudinary_resource_type, storage_folder
+from .helpers import get_cloudinary_resource_type
 
 @deconstructible
 class CloudinaryStorage(Storage):
@@ -43,13 +43,25 @@ class CloudinaryStorage(Storage):
     def location(self):
         return os.path.abspath(self.base_location)
 
-    
+    @property
+    def storage_folder(self):
+        folder = ""
+        if 'BASE_STORAGE_LOCATION' in settings.CLOUDINARY_STORAGE.keys():
+            folder = itemgetter('BASE_STORAGE_LOCATION')(settings.CLOUDINARY_STORAGE)  
+        elif hasattr(settings, 'BASE_DIR'):
+            folder = os.path.basename(settings.BASE_DIR) 
+        if folder.startswith("/") == False:
+            folder = "/"+ folder
+        if folder.endswith("/") == False:
+            folder += "/"
+        return folder 
+
     @cached_property
     def base_url(self):
         if self._base_url is not None and not self._base_url.endswith('/'):
             self._base_url += "/"
         return os.path.join(
-            storage_folder(), 
+            self.storage_folder, 
             self._value_or_setting(self._base_url, settings.MEDIA_URL).lstrip("/")
             ).replace('\\', '/')
 
@@ -168,12 +180,12 @@ class CloudinaryStorage(Storage):
         url = filepath_to_uri(name).lstrip('/')
         if local:
             prefix = self.base_url[len(self.storage_folder.rstrip('/')):]
-            if url.lstrip('/').startswith(self.storage_folder.lstrip('/')):
-                url = url[len(self.storage_folder.lstrip('/').rstrip('/')):]
+            if url.startswith(self.storage_folder.lstrip('/')):
+                url = url[len(self.storage_folder.lstrip('/')):]
         else:
             prefix = self.base_url
         if url is not None:
-            if not url.lstrip('/').startswith(prefix.lstrip('/')):
+            if not url.startswith(prefix.lstrip('/')):
                 url = os.path.join(prefix, url)
-        return url
+        return '/'+ url if not url.startswith('/') else url
 
