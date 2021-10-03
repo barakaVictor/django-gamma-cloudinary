@@ -9,7 +9,7 @@ class GammaCloudinaryTemplatetagsTestCase(SimpleTestCase):
 
     def test_gamma_cloudinary_static_tag(self):
         TEMPLATE = Template("{% load gamma_cloudinary_static %}"
-                            "{% gamma_cloudinary_static 'images/why-choose-us.jpg' %}")
+                            "{% gamma_cl_static 'images/why-choose-us.jpg' %}")
         rendered = TEMPLATE.render(Context({}))
         self.assertIn('https://res.cloudinary.com/', rendered)
         self.assertIn('images/why-choose-us.jpg', rendered)

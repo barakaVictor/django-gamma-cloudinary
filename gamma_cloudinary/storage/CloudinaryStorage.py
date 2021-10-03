@@ -1,4 +1,5 @@
 import os
+import json
 import requests
 import cloudinary
 from operator import itemgetter
@@ -44,26 +45,17 @@ class CloudinaryStorage(Storage):
         return os.path.abspath(self.base_location)
 
     @property
-    def storage_folder(self):
+    def upload_folder(self):
         folder = ""
         if 'BASE_STORAGE_LOCATION' in settings.CLOUDINARY_STORAGE.keys():
             folder = itemgetter('BASE_STORAGE_LOCATION')(settings.CLOUDINARY_STORAGE)  
-        elif hasattr(settings, 'BASE_DIR'):
-            folder = os.path.basename(settings.BASE_DIR) 
-        if folder.startswith("/") == False:
-            folder = "/"+ folder
-        if folder.endswith("/") == False:
-            folder += "/"
-        return folder 
+        else:
+            folder = os.path.basename(self.base_location) 
+        return os.path.join(folder, '') 
 
     @cached_property
     def base_url(self):
-        if self._base_url is not None and not self._base_url.endswith('/'):
-            self._base_url += "/"
-        return os.path.join(
-            self.storage_folder, 
-            self._value_or_setting(self._base_url, settings.MEDIA_URL).lstrip("/")
-            ).replace('\\', '/')
+        return os.path.join(self._value_or_setting(self._base_url, settings.MEDIA_URL), '')
 
     def exists(self, name):
         """
@@ -125,7 +117,7 @@ class CloudinaryStorage(Storage):
             'overwrite': True,
             'invalidate': True
             }
-        folder, name = os.path.split(self.custom_path(name, local=False))
+        folder, name = os.path.split(self.upload_path(name))
         if folder:
             options['folder'] = folder
         response = cloudinary.uploader.upload(content, **options)
@@ -133,7 +125,7 @@ class CloudinaryStorage(Storage):
 
     def delete(self, name):
         assert name, "The name argument is not allowed to be empty."
-        name = self.custom_path(name, local=False)
+        name = self.url(name, local=False)
         options = {
             'invalidate': True
         }
@@ -153,37 +145,20 @@ class CloudinaryStorage(Storage):
         string: The url to use to access the target resource on Cloudinary
         
         """  
-        local = options['local'] if 'local' in options.keys() else settings.DEBUG  
-        if local:
-            return self.custom_path(name)  
+        url = filepath_to_uri(name).lstrip('/')
+        if settings.DEBUG:
+            return os.path.join(self.base_url, url)
         cloudinary_resource = cloudinary.CloudinaryResource(
-            self.custom_path(name, local=False).lstrip('/'),
+            self.upload_path(url),
             default_resource_type=get_cloudinary_resource_type(name)
         )
         return cloudinary_resource.url
 
-    def custom_path(self, name, local=settings.DEBUG):
-        """
-        Generate a proper path to use when uploading a file
+    def upload_path(self, name):
+        return (os.path.join(self.upload_folder, self.base_url.lstrip('/'), name).lstrip('/')).replace('\\', '/')
 
-        Parameters:
-        name (string): The name of/path to the file to upload
+    def save_file_types(self, file_props):
+        url_types_dict_name = 'remotefiletypes'
 
-        Returns:
-        string: The proper name/path to use to upload a file
-
-        Appends the appropriate url/uri prefix to the name based on the kind of upload
-        being conducted i.e A media upload or a static file upload. Static file uploads should
-        end up in a folder as indicated by the STATIC_ROOT value in the django settings module,
-        same case for media files
-        """
-        url = filepath_to_uri(name).lstrip('/')
-        if local:
-            prefix = self.base_url[len(self.storage_folder.rstrip('/')):]
-        else:
-            prefix = self.base_url
-        if url is not None:
-            if not url.startswith(prefix.lstrip('/')):
-                url = os.path.join(prefix, url)
-        return url
-
+        with open(url_types_dict_name, rw)as types_file:
+            types_file.write(json.dumps(file_props))
