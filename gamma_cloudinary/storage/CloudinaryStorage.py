@@ -155,8 +155,12 @@ class CloudinaryStorage(Storage):
         return cloudinary_resource.url
 
     def upload_path(self, name):
-        return (os.path.join(self.upload_folder, self.base_url.lstrip('/'), name).lstrip('/')).replace('\\', '/')
-
+        name.replace('\\', '/')
+        base = os.path.join(self.upload_folder, self.base_url.lstrip('/')).replace('\\', '/')
+        if name.startswith(base):
+            return name
+        return (os.path.join(base, name).lstrip('/')).replace('\\', '/')
+        
     def save_file_types(self, file_props):
         url_types_dict_name = 'remotefiletypes'
 
