@@ -29,7 +29,6 @@ class CloudinaryStorage(Storage):
         """Reset setting based property values."""
         if setting == 'MEDIA_ROOT':
             self.__dict__.pop('base_location', None)
-            self.__dict__.pop('location', None)
         elif setting == 'MEDIA_URL':
             self.__dict__.pop('base_url', None)
 
@@ -39,23 +38,18 @@ class CloudinaryStorage(Storage):
     @cached_property
     def base_location(self):
         return self._value_or_setting(self._location, settings.MEDIA_ROOT)
-    
-    @cached_property
-    def location(self):
-        return os.path.abspath(self.base_location)
-
-    @property
-    def upload_folder(self):
-        folder = ""
-        if 'BASE_STORAGE_LOCATION' in settings.CLOUDINARY_STORAGE.keys():
-            folder = itemgetter('BASE_STORAGE_LOCATION')(settings.CLOUDINARY_STORAGE)  
-        else:
-            folder = os.path.basename(self.base_location) 
-        return os.path.join(folder, '') 
 
     @cached_property
     def base_url(self):
-        return os.path.join(self._value_or_setting(self._base_url, settings.MEDIA_URL), '')
+        root_folder = ""
+        if 'BASE_STORAGE_LOCATION' in settings.CLOUDINARY_STORAGE.keys():
+            root_folder = itemgetter('BASE_STORAGE_LOCATION')(settings.CLOUDINARY_STORAGE)  
+        else:
+            root_folder = os.path.basename(self.base_location)
+        return os.path.join(
+            root_folder, 
+            self._value_or_setting(self._base_url, settings.MEDIA_URL).lstrip('/'), 
+            '').replace('\\', '/')
 
     def exists(self, name):
         """
@@ -156,13 +150,6 @@ class CloudinaryStorage(Storage):
 
     def upload_path(self, name):
         name.replace('\\', '/')
-        base = os.path.join(self.upload_folder, self.base_url.lstrip('/')).replace('\\', '/')
-        if name.startswith(base):
+        if name.startswith(self.base_url):
             return name
-        return (os.path.join(base, name).lstrip('/')).replace('\\', '/')
-        
-    def save_file_types(self, file_props):
-        url_types_dict_name = 'remotefiletypes'
-
-        with open(url_types_dict_name, rw)as types_file:
-            types_file.write(json.dumps(file_props))
+        return (os.path.join(self.base_url, name).lstrip('/')).replace('\\', '/')
