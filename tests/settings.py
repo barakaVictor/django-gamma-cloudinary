@@ -4,7 +4,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = 'test_secret_key'
 
-DEBUG = True
+DEBUG = False
 
 TEST_ROOT = os.path.join(BASE_DIR, 'tests')
 
@@ -45,6 +45,7 @@ STATICFILES_DIRS = [
     os.path.join(TEST_ROOT, 'static')
 ]
 
+
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'test',
     'API_KEY': 'api_key',
@@ -52,3 +53,4 @@ CLOUDINARY_STORAGE = {
     'BASE_STORAGE_LOCATION': '/test/',
     'SECURE': True
 }
+
