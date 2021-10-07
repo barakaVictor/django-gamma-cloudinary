@@ -2,6 +2,7 @@ import os
 import json
 import requests
 import cloudinary
+from datetime import datetime
 from operator import itemgetter
 from django.conf import settings
 from django.core.files.storage import Storage
@@ -10,6 +11,7 @@ from django.utils.deconstruct import deconstructible
 from django.utils.encoding import filepath_to_uri
 from django.utils.functional import cached_property
 from django.core.signals import setting_changed
+from django.utils import timezone
 from .helpers import get_cloudinary_resource_type
 
 @deconstructible
@@ -149,7 +151,34 @@ class CloudinaryStorage(Storage):
         return cloudinary_resource.url
 
     def upload_path(self, name):
-        name.replace('\\', '/')
-        if name.startswith(self.base_url):
+        name = name.replace('\\', '/')
+        if name.startswith(self.base_url.lstrip('/')):
             return name
-        return (os.path.join(self.base_url, name).lstrip('/')).replace('\\', '/')
+        return (os.path.join(self.base_url.lstrip('/'), name).lstrip('/')).replace('\\', '/').lstrip('/')
+
+    def get_accessed_time(self, name):
+        """
+        Return the last accessed time (as a datetime) of the file specified by
+        name. The datetime will be timezone-aware if USE_TZ=True.
+        """
+        url = self.url(name, local=False)
+        response = requests.head(url)
+        return datetime.strptime(response.headers['Last-Modified'][:-4], '%a, %d %b %Y %H:%M:%S')
+
+    def get_created_time(self, name):
+        """
+        Return the creation time (as a datetime) of the file specified by name.
+        The datetime will be timezone-aware if USE_TZ=True.
+        """
+        url = self.url(name, local=False)
+        response = requests.head(url)
+        return datetime.strptime(response.headers['Last-Modified'][:-4], '%a, %d %b %Y %H:%M:%S')
+
+    def get_modified_time(self, name):
+        """
+        Return the last modified time (as a datetime) of the file specified by
+        name. The datetime will be timezone-aware if USE_TZ=True.
+        """
+        url = self.url(name, local=False)
+        response = requests.head(url)
+        return datetime.strptime(response.headers['Last-Modified'][:-4], '%a, %d %b %Y %H:%M:%S')
