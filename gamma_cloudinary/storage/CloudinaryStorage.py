@@ -163,7 +163,7 @@ class CloudinaryStorage(Storage):
         """
         url = self.url(name, local=False)
         response = requests.head(url)
-        return datetime.strptime(response.headers['Last-Modified'][:-4], '%a, %d %b %Y %H:%M:%S')
+        return datetime.strptime(response.headers['Last-Modified'], '%a, %d %b %Y %H:%M:%S %Z')
 
     def get_created_time(self, name):
         """
@@ -172,7 +172,7 @@ class CloudinaryStorage(Storage):
         """
         url = self.url(name, local=False)
         response = requests.head(url)
-        return datetime.strptime(response.headers['Last-Modified'][:-4], '%a, %d %b %Y %H:%M:%S')
+        return datetime.strptime(response.headers['Last-Modified'], '%a, %d %b %Y %H:%M:%S %Z')
 
     def get_modified_time(self, name):
         """
@@ -181,4 +181,4 @@ class CloudinaryStorage(Storage):
         """
         url = self.url(name, local=False)
         response = requests.head(url)
-        return datetime.strptime(response.headers['Last-Modified'][:-4], '%a, %d %b %Y %H:%M:%S')
+        return datetime.strptime(response.headers['Last-Modified'], '%a, %d %b %Y %H:%M:%S %Z')
