@@ -1,11 +1,7 @@
 import os
 import magic
 import mimetypes
-import cloudinary
-import urllib
-from django.conf import settings
 from django.core.management import call_command
-from django.contrib.staticfiles.storage import staticfiles_storage
 
 def get_cloudinary_resource_type(name):
     """
@@ -27,14 +23,12 @@ def get_cloudinary_resource_type(name):
     if mimetype is not None:
         resource_type, sub_type = mimetype.split('/')
     if resource_type == 'image':
-        """
-        when an SVG image is uploaded as a sprite, i.e.
-        including many different viewboxes for images/icons vectorial instructions
-        but not printing to the screen whatsoever, the ideal resource_type is raw.
-        if image resource_type is used, the image validation fails because when
-        trying to rasterize the image there is nothing display. This results in a failed upload.
-        We therefore go a step further and characterize svgs as a raw resource_type
-        """
+        #when an SVG image is uploaded as a sprite, i.e.
+        #including many different viewboxes for images/icons vectorial instructions
+        #but not printing to the screen whatsoever, the ideal resource_type is raw.
+        #if image resource_type is used, the image validation fails because when
+        #trying to rasterize the image there is nothing display. This results in a failed upload.
+        #We therefore go a step further and characterize svgs as a raw resource_type
         if sub_type == 'svg+xml':
             return 'raw'
         return 'image'

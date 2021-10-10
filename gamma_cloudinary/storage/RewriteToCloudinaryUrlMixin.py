@@ -111,7 +111,7 @@ class RewriteToCloudinaryUrlMixin:
                     #print(source_name)
                     target_name = posixpath.join(posixpath.dirname(source_name), url_parts.path)
 
-                transformed_url = self.url(target_name, local=False)
+                transformed_url = self.url(target_name)
 
                 if url_parts.query:
                     transformed_url += f"?{url_parts.query}"

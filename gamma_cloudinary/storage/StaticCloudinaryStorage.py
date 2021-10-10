@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.contrib.staticfiles.utils import check_settings
-from django.core.exceptions import ImproperlyConfigured
 from .CloudinaryStorage import CloudinaryStorage
 from .RewriteToCloudinaryUrlMixin import RewriteToCloudinaryUrlMixin
 
