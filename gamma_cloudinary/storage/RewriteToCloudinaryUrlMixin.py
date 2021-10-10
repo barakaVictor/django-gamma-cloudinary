@@ -37,17 +37,6 @@ class RewriteToCloudinaryUrlMixin:
                     template = self.default_template
                 compiled = re.compile(pattern, re.IGNORECASE)
                 self._patterns.setdefault(extension, []).append((compiled, template))
-    
-    def file_hash(self, name, content=None):
-        """
-        Return a hash of the file with the given name and optional content.
-        """
-        if content is None:
-            return None
-        md5 = hashlib.md5()
-        for chunk in content.chunks():
-            md5.update(chunk)
-        return md5.hexdigest()[:12]
 
     def post_process(self, paths, dry_run=False, **options):
        
