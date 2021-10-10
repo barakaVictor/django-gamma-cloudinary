@@ -20,5 +20,4 @@ class StaticCloudinaryStorage(RewriteToCloudinaryUrlMixin, CloudinaryStorage):
             self.base_location = None
             self.location = None
 
-    
-               
+

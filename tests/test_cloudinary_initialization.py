@@ -14,7 +14,7 @@ class CloudinarySetUpTestCase(SimpleTestCase):
                                                             '(or CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET) '
                                                             'environment variables).'):
             setup_cloudinary()
- 
+
     @override_settings(
         CLOUDINARY_STORAGE={
             'CLOUD_NAME': 'test',

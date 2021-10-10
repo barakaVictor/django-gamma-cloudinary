@@ -43,4 +43,3 @@ def setup_cloudinary():
             #comprehension to convert all keys to snake_case fromat as is required in
             #cloudinary data type guidelines
             cloudinary.config(**{key.lower(): value for key, value in cloudinary_settings.items()})
-            
