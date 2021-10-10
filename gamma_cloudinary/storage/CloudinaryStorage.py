@@ -11,7 +11,6 @@ from django.utils.deconstruct import deconstructible
 from django.utils.encoding import filepath_to_uri
 from django.utils.functional import cached_property
 from django.core.signals import setting_changed
-from django.utils import timezone
 from .helpers import get_cloudinary_resource_type
 
 @deconstructible
@@ -147,6 +146,15 @@ class CloudinaryStorage(Storage):
         response = cloudinary.uploader.destroy(name, **options)
         return response['result'] == 'ok'
 
+    
+    def get_alternative_name(self, file_root, file_ext):
+        """
+        Return an alternative filename, by adding an underscore and a random 7
+        character alphanumeric string (before the file extension, if one
+        exists) to the filename.
+        """
+        return '%s%s' % (file_root, file_ext)
+
     #lesson learnt -> prefer to specify the resource_type when using the SDK as
     #opposed to using the auto option
     def url(self, name, **options):
@@ -181,7 +189,7 @@ class CloudinaryStorage(Storage):
         Return the last modified time (as a datetime) of the file specified by
         name. The datetime will be timezone-aware if USE_TZ=True.
         """
-        file_metada = {k:v for (k,v) in self.read_manifest().items() if name in k} 
+        file_metada = {k:v for (k,v) in self.read_manifest().items() if name in k}
         return datetime.fromisoformat(file_metada['created_at'][:-1]).strptime('%Y-%m-%d %H:%M:%S')
 
     def get_modified_time(self, name):
@@ -190,7 +198,9 @@ class CloudinaryStorage(Storage):
         name. The datetime will be timezone-aware if USE_TZ=True.
         """
         file_metada = self.get_file_metadata(name)
-        return datetime.strptime(file_metada['Last-Modified'], '%a, %d %b %Y %H:%M:%S %Z')
+        if file_metada and hasattr(file_metada, 'Last-Modified'):
+            return datetime.strptime(file_metada['Last-Modified'], '%a, %d %b %Y %H:%M:%S %Z')
+        return datetime.now()
 
     def save_manifest(self):
         with open(self.manifest_name, 'w') as manifest:

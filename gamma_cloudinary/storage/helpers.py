@@ -1,15 +1,11 @@
 import os
-import re
 import magic
 import mimetypes
 import cloudinary
 import urllib
-from operator import itemgetter
-from django.core.management import call_command
 from django.conf import settings
-from django.core.files.base import File
+from django.core.management import call_command
 from django.contrib.staticfiles.storage import staticfiles_storage
-
 
 def get_cloudinary_resource_type(name):
     """
@@ -22,7 +18,7 @@ def get_cloudinary_resource_type(name):
     resource_type = None
     mimetype = None
     root, ext = os.path.splitext(name)
-    if ext is "":
+    if ext == "":
         buffer_content = find_files(name)
         if buffer_content is not None:
             mimetype = magic.from_buffer(buffer_content, mime=True)
@@ -52,33 +48,4 @@ def find_files(name):
     if f"Found '{name}' here:" in filepath:
         path = ' '.join(filepath.split(f"Found '{name}' here:",1)[1].split())
         with open(path) as f:
-            return f.read(300)
-    else:
-        return checkOnline(name)
-
-def checkOnline(name):
-    prefix = storage_folder()
-    
-    targets = [settings.STATIC_URL, settings.MEDIA_URL]
-    resource_types = ['raw', 'video', 'image']
-
-    for target in targets:
-        if not name.replace('\\', '/').lstrip('/').startswith(os.path.join(prefix, target.lstrip('/')).lstrip('/')):
-            name = os.path.join(prefix, target.lstrip('/'), name.lstrip('/')).replace('\\', '/')
-        for resource_type in resource_types:
-            url = cloudinary.CloudinaryResource(name.lstrip('/'), default_resource_type=resource_type).url
-            request = urllib.request.Request(url)
-            request.get_method = lambda: 'HEAD'
-            try:
-                response = urllib.request.urlopen(request)
-                status_code = response.getcode()
-    
-            except urllib.request.HTTPError as e:
-                if e.code == 404:
-                    continue
-                raise e
-
-            if status_code == 200:
-                request = urllib.request.Request(url)
-                with urllib.request.urlopen(request) as f:
-                    return f.read(300)
+            return f.read(2048)
