@@ -10,8 +10,8 @@ from django.contrib.staticfiles.storage import staticfiles_storage
 def get_cloudinary_resource_type(name):
     """
     Returns an appropriate resource_type based on the name of the target
-    resource. 
-    
+    resource.
+
     The provided name should have the file extension otherwise
     it will be classified as a raw resource_type by default
     """

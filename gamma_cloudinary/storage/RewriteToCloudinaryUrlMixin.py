@@ -9,11 +9,11 @@ from django.core.files.base import ContentFile
 
 class RewriteToCloudinaryUrlMixin:
     """
-    Provides mechanism to rewrite relative paths referencing 
+    Provides mechanism to rewrite relative paths referencing
     other static assets to their cloudinary urls
 
-    Without this, the paths would end up being broken as on 
-    cloudinary we no longer use the relative paths as is the 
+    Without this, the paths would end up being broken as on
+    cloudinary we no longer use the relative paths as is the
     case when developing locally.
     """
     default_template = """url("%s")"""
@@ -39,12 +39,12 @@ class RewriteToCloudinaryUrlMixin:
                 self._patterns.setdefault(extension, []).append((compiled, template))
 
     def post_process(self, paths, dry_run=False, **options):
-       
+
         # build a list of adjustable files
         adjustable_paths = [
             path for path in paths if matches_patterns(path, self._patterns)
         ]
-        
+
         def path_level(name):
             return len(name.split(os.sep))
 
@@ -72,7 +72,7 @@ class RewriteToCloudinaryUrlMixin:
                                     content = pattern.sub(converter, content)
                                 except ValueError as exc:
                                     yield name, None, exc, False
-            
+
                     # then save the processed result
                     saved_name = self._save(name, ContentFile(content, name=name))
                     processed = True
@@ -82,7 +82,7 @@ class RewriteToCloudinaryUrlMixin:
     def url_converter(self, name, template=None):
             """
             Return the custom URL converter for the given file name.
-            
+
             """
             if template is None:
                 template = self.default_template

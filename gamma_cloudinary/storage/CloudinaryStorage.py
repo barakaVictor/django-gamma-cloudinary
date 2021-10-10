@@ -27,7 +27,7 @@ class CloudinaryStorage(Storage):
         self._location = location
         self._base_url = base_url
         setting_changed.connect(self._clear_cached_properties)
-    
+
     def _clear_cached_properties(self, setting, **kwargs):
         """Reset setting based property values."""
         if setting == 'MEDIA_ROOT':
@@ -46,12 +46,12 @@ class CloudinaryStorage(Storage):
     def base_url(self):
         root_folder = ""
         if 'BASE_STORAGE_LOCATION' in settings.CLOUDINARY_STORAGE.keys():
-            root_folder = itemgetter('BASE_STORAGE_LOCATION')(settings.CLOUDINARY_STORAGE)  
+            root_folder = itemgetter('BASE_STORAGE_LOCATION')(settings.CLOUDINARY_STORAGE)
         else:
             root_folder = os.path.basename(self.base_location)
         return os.path.join(
-            root_folder, 
-            self._value_or_setting(self._base_url, settings.MEDIA_URL).lstrip('/'), 
+            root_folder,
+            self._value_or_setting(self._base_url, settings.MEDIA_URL).lstrip('/'),
             '').replace('\\', '/')
 
     def exists(self, name):
@@ -62,8 +62,8 @@ class CloudinaryStorage(Storage):
         name(string): The name of the target file to check for.
 
         Returns:
-        True if the file does exist and False if it does not. 
-        It raises an exception incase a http error other than 404 
+        True if the file does exist and False if it does not.
+        It raises an exception incase a http error other than 404
         is encountered while querying Cloudinary.
         """
         url = self.url(name, local=False)
@@ -86,7 +86,7 @@ class CloudinaryStorage(Storage):
         if file_metada:
             return file_metada['Content-Length']
         return None
-    
+
     def _open(self, name, mode='rb'):
         """
         Mechanism used to open a file
@@ -94,7 +94,7 @@ class CloudinaryStorage(Storage):
         Arguments:
         name -- The name of the file to open
         mode -- The mode used when opening the file
-        
+
         returns a File object or raises an exception
         if the file does not exist
         """
@@ -146,7 +146,7 @@ class CloudinaryStorage(Storage):
         response = cloudinary.uploader.destroy(name, **options)
         return response['result'] == 'ok'
 
-    
+
     def get_alternative_name(self, file_root, file_ext):
         """
         Return an alternative filename, by adding an underscore and a random 7
@@ -166,8 +166,8 @@ class CloudinaryStorage(Storage):
 
         Returns:
         string: The url to use to access the target resource on Cloudinary
-        
-        """  
+
+        """
         url = filepath_to_uri(name).lstrip('/')
         if settings.DEBUG:
             return os.path.join(self.base_url, url)
@@ -222,5 +222,5 @@ class CloudinaryStorage(Storage):
         except FileNotFoundError:
             return None
 
-        
-        
+
+

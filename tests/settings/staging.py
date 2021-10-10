@@ -13,9 +13,9 @@ INSTALLED_APPS = [
     'cloudinary',
     'gamma_cloudinary'
 ]
-    
+
 MIDDLEWARE = [
-    
+
 ]
 
 TEMPLATES = [
