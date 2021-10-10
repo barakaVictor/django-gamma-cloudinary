@@ -26,7 +26,11 @@ class CloudinaryStorageTestCase(SimpleTestCase):
 
     @patch('gamma_cloudinary.storage.CloudinaryStorage.cloudinary.uploader.upload')
     def test___save(self, mock_uploader):
-        mock_uploader.return_value = {'public_id':'test_resource_id'}
+        mock_uploader.return_value = {
+            'public_id':'test_resource_id',
+            'api_key': '88489930',
+            'secure_url': 'https://secure_url'
+            }
         self.assertEqual(self.storage._save('css/test.css', ContentFile(b"these are bytes") ), 'test_resource_id')
 
     @patch('gamma_cloudinary.storage.CloudinaryStorage.requests.get')
