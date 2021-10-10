@@ -19,7 +19,9 @@ Quick start
 
 1. Install the package.
    As at now, the package is only available from github so to install make sure to have
-   git installed on your machine then run the command below.
+   git installed on your machine then run the command below. Also,the package has a python magic dependency
+   so be sure to install the correct version of this library before attempting to use it i.e. python-magic for linux
+   users and python-magic-bin for windows
    ::
    	``$ pip install --upgrade git+git://github.com/barakaVictor/django-gamma-cloudinary.git``
 	
