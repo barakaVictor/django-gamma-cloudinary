@@ -45,7 +45,7 @@ STATICFILES_DIRS = [
     os.path.join(TEST_ROOT, 'static')
 ]
 
-
+"""
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'test',
     'API_KEY': 'api_key',
@@ -53,4 +53,14 @@ CLOUDINARY_STORAGE = {
     'BASE_STORAGE_LOCATION': '/test/',
     'SECURE': True
 }
+"""
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': 'baraka', 
+    'API_KEY': '776422338825527',
+    'API_SECRET': '8mtslRA7t1NvMehGv1MahPzZuNQ',
+    'BASE_STORAGE_LOCATION': '/test/',
+    'SECURE': True  
+}
+
 

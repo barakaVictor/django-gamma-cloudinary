@@ -8,20 +8,8 @@ from operator import itemgetter
 from django.core.management import call_command
 from django.conf import settings
 from django.core.files.base import File
-from . import CloudinaryStorage
+from django.contrib.staticfiles.storage import staticfiles_storage
 
-
-def storage_folder():
-    folder = ""
-    if 'BASE_STORAGE_LOCATION' in settings.CLOUDINARY_STORAGE.keys():
-        folder = itemgetter('BASE_STORAGE_LOCATION')(settings.CLOUDINARY_STORAGE)  
-    elif hasattr(settings, 'BASE_DIR'):
-        folder = os.path.basename(settings.BASE_DIR) 
-    if folder.startswith("/") == False:
-        folder = "/"+ folder
-    if folder.endswith("/") == False:
-        folder += "/"
-    return folder
 
 def get_cloudinary_resource_type(name):
     """

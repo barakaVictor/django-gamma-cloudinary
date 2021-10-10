@@ -21,6 +21,8 @@ class CloudinaryStorage(Storage):
     The base cloudinary storage class
 
     """
+    manifest_name= 'manifest.json'
+    url_to_resource_metadata_map = {}
 
     def __init__(self, location=None, base_url=None, options=None):
         self._location = location
@@ -72,6 +74,20 @@ class CloudinaryStorage(Storage):
         response.raise_for_status()
         return True
 
+    def get_file_metadata(self, name):
+        response = requests.head(self.url(name, local=False))
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as e:
+            return None
+        return response.headers
+
+    def size(self, name):
+        file_metada = self.get_file_metadata(name)
+        if file_metada:
+            return file_metada['Content-Length']
+        return None
+    
     def _open(self, name, mode='rb'):
         """
         Mechanism used to open a file
@@ -117,6 +133,9 @@ class CloudinaryStorage(Storage):
         if folder:
             options['folder'] = folder
         response = cloudinary.uploader.upload(content, **options)
+        response.pop('api_key')
+        self.url_to_resource_metadata_map[response['secure_url']] = response
+        self.save_manifest()
         return response['public_id']
 
     def delete(self, name):
@@ -156,29 +175,42 @@ class CloudinaryStorage(Storage):
             return name
         return (os.path.join(self.base_url.lstrip('/'), name).lstrip('/')).replace('\\', '/').lstrip('/')
 
-    def get_accessed_time(self, name):
-        """
-        Return the last accessed time (as a datetime) of the file specified by
-        name. The datetime will be timezone-aware if USE_TZ=True.
-        """
-        url = self.url(name, local=False)
-        response = requests.head(url)
-        return datetime.strptime(response.headers['Last-Modified'], '%a, %d %b %Y %H:%M:%S %Z')
 
     def get_created_time(self, name):
         """
-        Return the creation time (as a datetime) of the file specified by name.
-        The datetime will be timezone-aware if USE_TZ=True.
+        Return the last modified time (as a datetime) of the file specified by
+        name. The datetime will be timezone-aware if USE_TZ=True.
         """
-        url = self.url(name, local=False)
-        response = requests.head(url)
-        return datetime.strptime(response.headers['Last-Modified'], '%a, %d %b %Y %H:%M:%S %Z')
+        file_metada = {k:v for (k,v) in self.read_manifest().items() if name in k} 
+        return datetime.fromisoformat(file_metada['created_at'][:-1]).strptime('%Y-%m-%d %H:%M:%S')
 
     def get_modified_time(self, name):
         """
         Return the last modified time (as a datetime) of the file specified by
         name. The datetime will be timezone-aware if USE_TZ=True.
         """
-        url = self.url(name, local=False)
-        response = requests.head(url)
-        return datetime.strptime(response.headers['Last-Modified'], '%a, %d %b %Y %H:%M:%S %Z')
+        file_metada = self.get_file_metadata(name)
+        return datetime.strptime(file_metada['Last-Modified'], '%a, %d %b %Y %H:%M:%S %Z')
+
+    def save_manifest(self):
+        with open(self.manifest_name, 'w') as manifest:
+            json.dump(self.url_to_resource_metadata_map, manifest)
+
+
+    def read_manifest(self):
+        try:
+            with self.open(self.manifest_name) as manifest:
+                content = manifest.read().decode()
+                if content is None:
+                    return {}
+                try:
+                    stored = json.loads(content)
+                except json.JSONDecodeError:
+                    pass
+                else:
+                    return stored
+        except FileNotFoundError:
+            return None
+
+        
+        
