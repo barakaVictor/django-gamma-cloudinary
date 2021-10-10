@@ -66,7 +66,7 @@ class CloudinaryStorage(Storage):
         It raises an exception incase a http error other than 404
         is encountered while querying Cloudinary.
         """
-        url = self.url(name, local=False)
+        url = self.url(name)
         response = requests.head(url)
         if response.status_code == 404:
             return False
@@ -74,7 +74,7 @@ class CloudinaryStorage(Storage):
         return True
 
     def get_file_metadata(self, name):
-        response = requests.head(self.url(name, local=False))
+        response = requests.head(self.url(name))
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as e:
@@ -98,7 +98,7 @@ class CloudinaryStorage(Storage):
         returns a File object or raises an exception
         if the file does not exist
         """
-        url = self.url(name, local=False)
+        url = self.url(name)
         response = requests.get(url)
 
         try:
@@ -139,7 +139,7 @@ class CloudinaryStorage(Storage):
 
     def delete(self, name):
         assert name, "The name argument is not allowed to be empty."
-        name = self.url(name, local=False)
+        name = self.url(name)
         options = {
             'invalidate': True
         }
@@ -157,7 +157,7 @@ class CloudinaryStorage(Storage):
 
     #lesson learnt -> prefer to specify the resource_type when using the SDK as
     #opposed to using the auto option
-    def url(self, name, **options):
+    def url(self, name):
         """
         Get the full cloudinary url to a resource
 

@@ -1,5 +1,5 @@
 try:
     #from tests.settings.development import *
     from tests.settings.staging import *
-except e:
+except Exception as e:
     raise e
