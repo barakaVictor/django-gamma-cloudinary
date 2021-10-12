@@ -178,7 +178,7 @@ class CloudinaryStorage(Storage):
         return cloudinary_resource.url
 
     def upload_path(self, name):
-        name = name.replace('\\', '/')
+        name = name.replace('\\', '/').lstrip('/')
         if name.startswith(self.base_url.lstrip('/')):
             return name
         return (os.path.join(self.base_url.lstrip('/'), name).lstrip('/')).replace('\\', '/').lstrip('/')
