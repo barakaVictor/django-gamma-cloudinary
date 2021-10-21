@@ -185,6 +185,8 @@ class CloudinaryStorage(Storage):
         if folder:
             options['folder'] = folder
         response = cloudinary.uploader.upload(content, **options)
+        if settings.MEDIA_ROOT in self.base_location and hasattr(response, 'format') and response['resource_type'] in ['image', 'video', 'audio']:
+            return "%s.%s"%(response['public_id'], response['format'])
         return response['public_id']
 
     def delete(self, name):
