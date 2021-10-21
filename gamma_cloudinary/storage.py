@@ -16,7 +16,7 @@ from django.utils.functional import cached_property
 from django.utils.deconstruct import deconstructible
 from django.core.exceptions import SuspiciousFileOperation
 from django.contrib.staticfiles.utils import matches_patterns, check_settings
-from gamma_cloudinary.utils import value_or_setting, find_file, get_mime_type, get_resource_type
+from gamma_cloudinary.utils import value_or_setting, get_mime_type, get_resource_type
 
 @deconstructible
 class CloudinaryStorage(Storage):
