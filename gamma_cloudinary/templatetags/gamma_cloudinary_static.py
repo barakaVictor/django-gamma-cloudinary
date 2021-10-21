@@ -2,6 +2,7 @@ from cloudinary import CloudinaryResource
 from django import template
 from django.utils.safestring import mark_safe
 from django.contrib.staticfiles.storage import staticfiles_storage
+from gamma_cloudinary.utils import get_resource_type
 
 register = template.Library()
 
@@ -21,6 +22,6 @@ def gamma_cloudinary_static(context, resource_name, options_dict=None, **options
         resource_path = staticfiles_storage.url(resource_name)
         resource = CloudinaryResource(
             resource_path,
-            default_resource_type=staticfiles_storage.get_resource_type(resource_path)
+            default_resource_type=get_resource_type(resource_path)
             )
     return mark_safe(resource.build_url(**options))

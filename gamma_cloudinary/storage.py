@@ -1,9 +1,6 @@
 import os
 import re
-import json
-import magic
 import requests
-import mimetypes
 import posixpath
 import cloudinary
 from datetime import datetime
@@ -13,13 +10,13 @@ from django.conf import settings
 from django.utils import timezone
 from django.core.files.storage import Storage
 from django.core.files.base import ContentFile
-from django.core.management import call_command
 from django.core.signals import setting_changed
 from django.utils.encoding import filepath_to_uri
 from django.utils.functional import cached_property
 from django.utils.deconstruct import deconstructible
 from django.core.exceptions import SuspiciousFileOperation
 from django.contrib.staticfiles.utils import matches_patterns, check_settings
+from gamma_cloudinary.utils import value_or_setting, find_file, get_mime_type, get_resource_type
 
 @deconstructible
 class CloudinaryStorage(Storage):
@@ -28,9 +25,6 @@ class CloudinaryStorage(Storage):
     The base cloudinary storage class
 
     """
-    manifest_name= 'manifest.json'
-    url_to_resource_metadata_map = {}
-
     def __init__(self, location=None, base_url=None, options=None):
         self._location = location
         self._base_url = base_url
@@ -43,12 +37,9 @@ class CloudinaryStorage(Storage):
         elif setting == 'MEDIA_URL':
             self.__dict__.pop('base_url', None)
 
-    def _value_or_setting(self, value, setting):
-        return setting if value is None else value
-
     @cached_property
     def base_location(self):
-        return self._value_or_setting(self._location, settings.MEDIA_ROOT)
+        return value_or_setting(self._location, settings.MEDIA_ROOT)
 
     @cached_property
     def base_url(self):
@@ -58,54 +49,11 @@ class CloudinaryStorage(Storage):
         else:
             root_folder = os.path.basename(self.base_location)
         if settings.DEBUG:
-            return self._value_or_setting(self._base_url, settings.MEDIA_URL).lstrip('/')
+            return value_or_setting(self._base_url, settings.MEDIA_URL).lstrip('/')
         return os.path.join(
             root_folder,
-            self._value_or_setting(self._base_url, settings.MEDIA_URL).lstrip('/'),
+            value_or_setting(self._base_url, settings.MEDIA_URL).lstrip('/'),
             '').replace('\\', '/')
-
-    def get_mime_type(self, name):
-        mimetype = None
-        root, ext = os.path.splitext(name)
-        if ext == "":
-            filepath = self.find_file(name)
-            if bool(filepath):
-                mimetype = magic.from_buffer(open(filepath, "rb").read(2048), mime=True)
-        else:
-            mimetype = mimetypes.guess_type(name)[0]
-        return mimetype
-
-    def get_resource_type(self, name):
-        """
-        Returns an appropriate resource_type based on the name of the target
-        resource.
-
-        The provided name should have the file extension otherwise
-        it will be classified as a raw resource_type by default
-        """
-        mimetype = self.get_mime_type(name)
-        if bool(mimetype):
-            resource_type, sub_type = mimetype.split('/')
-            if resource_type == 'image':
-                #when an SVG image is uploaded as a sprite, i.e.
-                #including many different viewboxes for images/icons vectorial instructions
-                #but not printing to the screen whatsoever, the ideal resource_type is raw.
-                #if image resource_type is used, the image validation fails because when
-                #trying to rasterize the image there is nothing display. This results in a failed upload.
-                #We therefore go a step further and characterize svgs as a raw resource_type
-                if sub_type == 'svg+xml':
-                    return 'raw'
-                return 'image'
-            elif resource_type == 'video' or resource_type == 'audio':
-                return 'video'
-        return 'raw'
-
-    def find_file(self, name):
-        filepath = call_command('findstatic', name, first=True, verbosity=0)
-        if name in filepath and os.path.isfile(filepath):
-            return filepath
-        return None
-
 
     def exists(self, name):
         """
@@ -128,10 +76,9 @@ class CloudinaryStorage(Storage):
 
     def get_file_metadata(self, name):
         response = requests.head(self.url(name))
-        try:
-            response.raise_for_status()
-        except requests.exceptions.HTTPError as e:
+        if response.status_code == 404:
             return None
+        response.raise_for_status()
         return response.headers
 
     def size(self, name):
@@ -154,10 +101,9 @@ class CloudinaryStorage(Storage):
         url = self.url(name)
         response = requests.get(url)
 
-        try:
-            response.raise_for_status()
-        except requests.exceptions.HTTPError as e:
-            raise e
+        if response.status_code == 404:
+            return None
+        response.raise_for_status()
 
         file = ContentFile(response.content)
         file.name = name
@@ -176,7 +122,7 @@ class CloudinaryStorage(Storage):
         """
         options = {
             'use_filename': True,
-            'resource_type': self.get_resource_type(name),
+            'resource_type': get_resource_type(name),
             'unique_filename': False,
             'overwrite': True,
             'invalidate': True
@@ -184,7 +130,7 @@ class CloudinaryStorage(Storage):
         folder, name = os.path.split(self.upload_path(name))
         if folder:
             options['folder'] = folder
-        response = cloudinary.uploader.upload(content, **options) 
+        response = cloudinary.uploader.upload(content, **options)
         if settings.MEDIA_ROOT == self.base_location and response['resource_type'] in ['image', 'video', 'audio']:
             return "%s.%s"%(response['public_id'], response['format'])
         return response['public_id']
@@ -216,7 +162,7 @@ class CloudinaryStorage(Storage):
             return os.path.join(self.base_url, url)
         cloudinary_resource = cloudinary.CloudinaryResource(
             self.upload_path(url),
-            default_resource_type=self.get_resource_type(name)
+            default_resource_type=get_resource_type(name)
         )
         return cloudinary_resource.url
 
