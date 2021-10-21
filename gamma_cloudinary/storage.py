@@ -66,7 +66,6 @@ class CloudinaryStorage(Storage):
 
     def get_mime_type(self, name):
         mimetype = None
-        print(f"searching for {name}")
         root, ext = os.path.splitext(name)
         if ext == "":
             filepath = self.find_file(name)
@@ -186,10 +185,9 @@ class CloudinaryStorage(Storage):
         if folder:
             options['folder'] = folder
         response = cloudinary.uploader.upload(content, **options)
-        if 'sneeze' in response['public_id']:
-            print(options['resource_type'])
-            print(response)
         if settings.MEDIA_ROOT in self.base_location and hasattr(response, 'format') and response['resource_type'] in ['image', 'video', 'audio']:
+            if 'sneeze' in response['public_id']:
+                print("%s.%s"%(response['public_id'], response['format']))
             return "%s.%s"%(response['public_id'], response['format'])
         return response['public_id']
 
