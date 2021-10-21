@@ -66,6 +66,7 @@ class CloudinaryStorage(Storage):
 
     def get_mime_type(self, name):
         mimetype = None
+        print(f"searching for {name}")
         root, ext = os.path.splitext(name)
         if ext == "":
             filepath = self.find_file(name)
