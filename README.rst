@@ -56,8 +56,8 @@ Quick start
 
 5. Set the values for STATICFILES_STORAGE and DEFAULT_FILE_STORAGE settings like so
    ::
-   	STATICFILES_STORAGE = 'gamma_cloudinary.storage.StaticCloudinaryStorage.StaticCloudinaryStorage'
-	DEFAULT_FILE_STORAGE = 'gamma_cloudinary.storage.CloudinaryStorage.CloudinaryStorage'
+   	STATICFILES_STORAGE = 'gamma_cloudinary.storage.StaticCloudinaryStorage'
+	DEFAULT_FILE_STORAGE = 'gamma_cloudinary.storage.CloudinaryStorage'
 
 And you are all set to begin using the storage backend!!
 
