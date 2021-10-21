@@ -14,6 +14,9 @@ your static and media asset management with the Cloudinary platform.
 .. image:: https://app.codacy.com/project/badge/Coverage/46f9e273015842829ba79cff86b9d409    
 	:target: https://www.codacy.com/gh/barakaVictor/django-gamma-cloudinary/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=barakaVictor/django-gamma-cloudinary&amp;utm_campaign=Badge_Coverage
 
+.. image:: https://app.codacy.com/project/badge/Grade/46f9e273015842829ba79cff86b9d409
+	:target: https://www.codacy.com/gh/barakaVictor/django-gamma-cloudinary/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=barakaVictor/django-gamma-cloudinary&amp;utm_campaign=Badge_Grade)
+
 Quick start
 ----------------
 
