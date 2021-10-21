@@ -184,10 +184,8 @@ class CloudinaryStorage(Storage):
         folder, name = os.path.split(self.upload_path(name))
         if folder:
             options['folder'] = folder
-        response = cloudinary.uploader.upload(content, **options)
-        if 'sneeze' in response['public_id']:
-            print(f"MEDIA_ROOT: {settings.MEDIA_ROOT}, BASE_LOCATION: {self.base_location}, FORMAT: {response['format']}, RESOURCE_TYPE: {response['resource_type']}") 
-        if settings.MEDIA_ROOT in self.base_location and hasattr(response, 'format') and response['resource_type'] in ['image', 'video', 'audio']:
+        response = cloudinary.uploader.upload(content, **options) 
+        if settings.MEDIA_ROOT == self.base_location and hasattr(response, 'format') and response['resource_type'] in ['image', 'video', 'audio']:
             if 'sneeze' in response['public_id']:
                 print("%s.%s"%(response['public_id'], response['format']))
             return "%s.%s"%(response['public_id'], response['format'])
