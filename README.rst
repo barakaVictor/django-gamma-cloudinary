@@ -76,11 +76,11 @@ outlined below.
 
 1. load the template tag in the template that requires it like so
    ::
-    {% load gamma_cloudinary_static %}
+    {% load gamma_cl_static %}
 
 2. Use the template tag providing it with the transformation options you desire like so
    ::
-    {% gamma_cloudinary_static 'images/test.png' fetch_format='auto' quality='auto' dpr='auto' width='auto' responsive=True %}
+    {% gamma_cl_static 'images/test.png' fetch_format='auto' quality='auto' dpr='auto' width='auto' responsive=True %}
    
    Consult the cloudinary documentation for details about which options are available while applying 
    transformations on stored assets
