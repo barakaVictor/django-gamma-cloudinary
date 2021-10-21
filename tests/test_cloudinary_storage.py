@@ -60,7 +60,7 @@ class CloudinaryStorageTestCase(SimpleTestCase):
               "secure_url": "https://res.cloudinary.com/demo/image/upload/c_crop,g_north,h_200,w_260/v1570979139/eneivicys42bq5f2jpn2.jpg" }]
         }
         
-        self.assertEqual(self.storage._save('css/test.css', ContentFile(b"these are bytes") ), 'eneivicys42bq5f2jpn2')
+        self.assertEqual(self.storage._save('css/test.css', ContentFile(b"these are bytes") ), 'eneivicys42bq5f2jpn2.jpg')
 
     @patch('gamma_cloudinary.storage.requests.get')
     @patch('gamma_cloudinary.storage.CloudinaryStorage.url')
