@@ -186,8 +186,6 @@ class CloudinaryStorage(Storage):
             options['folder'] = folder
         response = cloudinary.uploader.upload(content, **options) 
         if settings.MEDIA_ROOT == self.base_location and response['resource_type'] in ['image', 'video', 'audio']:
-            if 'sneeze' in response['public_id']:
-                print("%s.%s"%(response['public_id'], response['format']))
             return "%s.%s"%(response['public_id'], response['format'])
         return response['public_id']
 
@@ -254,27 +252,6 @@ class CloudinaryStorage(Storage):
         if bool(file_metada) and hasattr(file_metada, 'Last-Modified'):
             return timezone.make_aware(datetime.strptime(file_metada['Last-Modified'], '%a, %d %b %Y %H:%M:%S %Z'))
         return timezone.now()
-
-    """
-    def save_manifest(self):
-        with open(self.manifest_name, 'w') as manifest:
-            json.dump(self.url_to_resource_metadata_map, manifest)
-
-
-    def read_manifest(self):
-        try:
-            with open(self.manifest_name) as manifest:
-                if manifest is None:
-                    return {}
-                try:
-                    stored = json.load(manifest)
-                except json.JSONDecodeError:
-                    pass
-                else:
-                    return stored
-        except FileNotFoundError:
-            return None
-    """
 
 class RewriteToCloudinaryUrlMixin:
     """
