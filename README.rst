@@ -135,3 +135,8 @@ Below are the settings utilized by this package with default values
     'BASE_STORAGE_LOCATION': ......
     'SECURE': True,
  }
+
+
+.. image:: https://api.codacy.com/project/badge/Grade/dbabd269bd3a4885afb192e6c6619bf3
+   :alt: Codacy Badge
+   :target: https://app.codacy.com/gh/barakaVictor/django-gamma-cloudinary?utm_source=github.com&utm_medium=referral&utm_content=barakaVictor/django-gamma-cloudinary&utm_campaign=Badge_Grade_Settings
