@@ -42,7 +42,7 @@ class CloudinaryStorageTestCase(SimpleTestCase):
           "bytes": 350749,
           "type": "upload",
           "etag": "5297bd123ad4ddad723483c176e35f6e",
-          "placeholder": false,
+          "placeholder": False,
           "url": "http://res.cloudinary.com/demo/image/upload/v1570979139/eneivicys42bq5f2jpn2.jpg",
           "secure_url": "https://res.cloudinary.com/demo/image/upload/v1570979139/eneivicys42bq5f2jpn2.jpg",
           "access_mode": "public",
