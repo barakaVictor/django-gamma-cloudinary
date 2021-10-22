@@ -26,13 +26,13 @@ Install the package using ``pip``.
 
 .. code-block:: sh
 
-$ pip install django-gamma-cloudinary
+	$ pip install django-gamma-cloudinary
 
 In case you use Django ImageField, make sure you have Pillow installed.
 
 .. code-block:: sh
 
-$ pip install Pillow
+	$ pip install Pillow
 
 Also, this package has a python-magic dependency which is a simple wrapper around the libmagic C library. 
 If running on Windows platform, be sure to also also install ``python-magic-bin`` by running ``pip install python-magic-bin`` 
@@ -89,7 +89,7 @@ STATICFILES_STORAGE in your settings file. The setting should be specified as fo
 
 .. code-block:: python
 
- STATICFILES_STORAGE = 'gamma_cloudinary.storage.StaticCloudinaryStorage'
+ 	STATICFILES_STORAGE = 'gamma_cloudinary.storage.StaticCloudinaryStorage'
 
 Afterwards, simply using the django ``static`` template tag would suffice to display your static files.
 However, if you require to apply cloudinary transformations to the static files during render, this
@@ -100,13 +100,13 @@ load the template tag in the template that requires it like so
 
 .. code-block:: htmldjango
 
-{% load gamma_cl_static %}
+	{% load gamma_cl_static %}
 
 Use the template tag providing it with the transformation options you desire like so
 
 .. code-block:: htmldjango
 
-{% gamma_cl_static 'images/test.png' fetch_format='auto' quality='auto' dpr='auto' width='auto' responsive=True %}
+	{% gamma_cl_static 'images/test.png' fetch_format='auto' quality='auto' dpr='auto' width='auto' responsive=True %}
 
 Consult the cloudinary documentation for details about which options are available while applying 
 transformations on stored assets
@@ -118,7 +118,7 @@ For usage with media assets, ensure that the DEFAULT_FILE_STORAGE backend is set
 
 .. code-block:: python
 
- DEFAULT_FILE_STORAGE = 'gamma_cloudinary.storage.CloudinaryStorage'
+ 	DEFAULT_FILE_STORAGE = 'gamma_cloudinary.storage.CloudinaryStorage'
 
 After setting this setting, all media uploads will end up in a location characterized by a combination of the MEDIA_ROOT and the value
 of ``CLOUDINARY_STORAGE['BASE_STORAGE_LOCATION']`` if this setting has been set.
@@ -128,14 +128,14 @@ Assuming we have a model like this
 
 .. code-block:: python
 
- class TestModel(models.Model):
-    image = models.ImageField(upload_to='images')
+	 class TestModel(models.Model):
+	    image = models.ImageField(upload_to='images')
 
 Then displaying the uploaded image would be as simple as
 
 .. code-block:: htmldjango
 
- <img src="{{  test.image.url  }}"/>
+	<img src="{{  test.image.url  }}"/>
 
 However, the above method is less flexible as it does not allow one to specify transformations to be applied to the asset
 before rendering. To achieve this flexibility, one is required to use the ``cloudinary_url`` template tag that comes with
@@ -145,14 +145,14 @@ Load the ``cloudinary`` template tags in your templates
 
 .. code-block:: htmldjango
 
-{% load cloudinary %}
+	{% load cloudinary %}
 
 Use the ``cloudinary_url`` tag passing it the name(public_id) of the resource to render. This name is easily
 retrievable from the name attribute of the django ``ImageField``
    
 .. code-block:: htmldjango
 
-<img src="{% cloudinary_url team.image.name fetch_format='auto' quality='auto' dpr='auto' width='auto' responsive=True default_image='placeholder' %}"/>
+	<img src="{% cloudinary_url team.image.name fetch_format='auto' quality='auto' dpr='auto' width='auto' responsive=True default_image='placeholder' %}"/>
 
 Settings
 ------------------------
@@ -161,15 +161,15 @@ Below are the settings utilized by this package with default values
 
 .. code-block:: python
 
- CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': None,  # required
-    'API_KEY': None,  # required
-    'API_SECRET': None,  # required
-    'BASE_STORAGE_LOCATION': ...... #parent folder to keep all media and static assets under in cloudinary media library
-    'SECURE': True,
- }
+	 CLOUDINARY_STORAGE = {
+	    'CLOUD_NAME': None,  # required
+	    'API_KEY': None,  # required
+	    'API_SECRET': None,  # required
+	    'BASE_STORAGE_LOCATION': ...... #parent folder to keep all media and static assets under in cloudinary media library
+	    'SECURE': True,
+	 }
  
- Additional resources
+Additional resources
 --------------------
 
 Additional resources are available at:
