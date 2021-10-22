@@ -26,9 +26,10 @@ Quick start
    
    .. code-block:: none
    
-      pip install --upgrade git+git://github.com/barakaVictor/django-gamma-cloudinary.git``
+      pip install --upgrade git+git://github.com/barakaVictor/django-gamma-cloudinary.git
 	
    In case you use Django ImageField, make sure you have Pillow installed.
+   
    .. code-block:: none
    
       pip install Pillow
