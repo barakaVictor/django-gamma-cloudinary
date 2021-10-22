@@ -25,10 +25,12 @@ Quick start
    git installed on your machine then run the command below.
    
    .. code-block:: none
+   
       pip install --upgrade git+git://github.com/barakaVictor/django-gamma-cloudinary.git``
 	
    In case you use Django ImageField, make sure you have Pillow installed.
    .. code-block:: none
+   
       pip install Pillow
 	
    Also, this package has a python-magic dependency which is a simple wrapper around the libmagic C library. 
