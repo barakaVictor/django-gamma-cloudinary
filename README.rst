@@ -20,63 +20,63 @@ your static and media asset management with the Cloudinary platform.
 Quick start
 ----------------
 
-1. Install the package.
-   As at now, the package is only available from github so to install make sure to have
-   git installed on your machine then run the command below.
-   
-   .. code-block:: none
-   
-      pip install django-gamma-cloudinary
-      
-   In case you use Django ImageField, make sure you have Pillow installed.
-   
-   .. code-block:: none
-   
-      pip install Pillow
-	
-   Also, this package has a python-magic dependency which is a simple wrapper around the libmagic C library. 
-   If running on Windows platform, be sure to also also install ``python-magic-bin`` by running ``pip install python-magic-bin`` 
-   while on linux (Debian/Ubuntu), be sure to install the libmagic C library by running ``sudo apt-get install libmagic1``
-   
-2. Add "gamma-cloudinary" and "cloudinary" to your INSTALLED_APPS setting like this
+Installation and setup.
+~~~~~~~~~~~~~~~~~~~~~~~
+Install the package using ``pip``.
 
-   .. code-block:: python
+.. code-block:: sh
+
+$ pip install django-gamma-cloudinary
+
+In case you use Django ImageField, make sure you have Pillow installed.
+
+.. code-block:: sh
+
+$ pip install Pillow
+
+Also, this package has a python-magic dependency which is a simple wrapper around the libmagic C library. 
+If running on Windows platform, be sure to also also install ``python-magic-bin`` by running ``pip install python-magic-bin`` 
+while on linux (Debian/Ubuntu), be sure to install the libmagic C library by running ``sudo apt-get install libmagic1``
    
-   	INSTALLED_APPS = [
+Add "gamma-cloudinary" and "cloudinary" to your INSTALLED_APPS setting like this
+
+.. code-block:: python
+
+	INSTALLED_APPS = [
 		...
 		'cloudinary',
 		'gamma_cloudinary',
 	]
 
-3. Next, you need to add Cloudinary credentials to settings.py
+Next, you need to add Cloudinary credentials to settings.py
 
-   .. code-block:: python
-   
-   	CLOUDINARY_STORAGE = {
-   		'CLOUD_NAME': 'your_cloud_name',
-        	'API_KEY': 'your_api_key',
-        	'API_SECRET': 'your_api_secret'
+.. code-block:: python
+
+	CLOUDINARY_STORAGE = {
+		'CLOUD_NAME': 'your_cloud_name',
+		'API_KEY': 'your_api_key',
+		'API_SECRET': 'your_api_secret'
 	}
     
-4. Set the STATIC_ROOT and MEDIA_ROOT as well as STATIC_URL and MEDIA_URL.
+Set the STATIC_ROOT and MEDIA_ROOT as well as STATIC_URL and MEDIA_URL.
 
-   .. code-block:: python
-   
-   	MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+.. code-block:: python
+
+	MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 	STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-	
+
 	STATIC_URL = '/static/'
 	MEDIA_URL = '/media/'
 	
-   This package uses this values of MEDIA_ROOT and STATIC_ROOT to determine where to place your static and 
-   media assets on Cloudinary. By default, static and media assets are placed at the top level location of your media library 
-   on cloudinary
+This package uses this values of MEDIA_ROOT and STATIC_ROOT to determine where to place your static and 
+media assets on Cloudinary. By default, static and media assets are placed at the top level location of your media library 
+on cloudinary
 
-5. Set the values for STATICFILES_STORAGE and DEFAULT_FILE_STORAGE settings like so
+Set the values for STATICFILES_STORAGE and DEFAULT_FILE_STORAGE settings like so
 
-   .. code-block:: python
+.. code-block:: python
 
-   	STATICFILES_STORAGE = 'gamma_cloudinary.storage.StaticCloudinaryStorage'
+	STATICFILES_STORAGE = 'gamma_cloudinary.storage.StaticCloudinaryStorage'
 	DEFAULT_FILE_STORAGE = 'gamma_cloudinary.storage.CloudinaryStorage'
 
 And you are all set to begin using the storage backend!!
@@ -96,20 +96,20 @@ However, if you require to apply cloudinary transformations to the static files 
 package defines a custom template tag name ``gamma_cl_static``. To use the tag follow the steps as 
 outlined below.
 
-1. load the template tag in the template that requires it like so
+load the template tag in the template that requires it like so
 
-   .. code-block:: python
-   
-    {% load gamma_cl_static %}
+.. code-block:: htmldjango
 
-2. Use the template tag providing it with the transformation options you desire like so
+{% load gamma_cl_static %}
 
-   .. code-block:: python
-   
-    {% gamma_cl_static 'images/test.png' fetch_format='auto' quality='auto' dpr='auto' width='auto' responsive=True %}
-   
-   Consult the cloudinary documentation for details about which options are available while applying 
-   transformations on stored assets
+Use the template tag providing it with the transformation options you desire like so
+
+.. code-block:: htmldjango
+
+{% gamma_cl_static 'images/test.png' fetch_format='auto' quality='auto' dpr='auto' width='auto' responsive=True %}
+
+Consult the cloudinary documentation for details about which options are available while applying 
+transformations on stored assets
 
 Usage with media assets
 ------------------------
@@ -133,7 +133,7 @@ Assuming we have a model like this
 
 Then displaying the uploaded image would be as simple as
 
-.. code-block:: python
+.. code-block:: htmldjango
 
  <img src="{{  test.image.url  }}"/>
 
@@ -141,18 +141,18 @@ However, the above method is less flexible as it does not allow one to specify t
 before rendering. To achieve this flexibility, one is required to use the ``cloudinary_url`` template tag that comes with
 the cloudinary package, a dependency of django-gamma-cloudinary. This is done following the steps below.
 
-1. Load the ``cloudinary`` template tags in your templates
+Load the ``cloudinary`` template tags in your templates
 
-   .. code-block:: python
-   
-    {% load cloudinary %}
+.. code-block:: htmldjango
 
-2. Use the ``cloudinary_url`` tag passing it the name(public_id) of the resource to render. This name is easily
-   retrievable from the name attribute of the django ``ImageField``
+{% load cloudinary %}
+
+Use the ``cloudinary_url`` tag passing it the name(public_id) of the resource to render. This name is easily
+retrievable from the name attribute of the django ``ImageField``
    
-   .. code-block:: python
-   
-    <img src="{% cloudinary_url team.image.name fetch_format='auto' quality='auto' dpr='auto' width='auto' responsive=True default_image='placeholder' %}"/>
+.. code-block:: htmldjango
+
+<img src="{% cloudinary_url team.image.name fetch_format='auto' quality='auto' dpr='auto' width='auto' responsive=True default_image='placeholder' %}"/>
 
 Settings
 ------------------------
@@ -165,6 +165,30 @@ Below are the settings utilized by this package with default values
     'CLOUD_NAME': None,  # required
     'API_KEY': None,  # required
     'API_SECRET': None,  # required
-    'BASE_STORAGE_LOCATION': ......
+    'BASE_STORAGE_LOCATION': ...... #parent folder to keep all media and static assets under in cloudinary media library
     'SECURE': True,
  }
+ 
+ Additional resources
+--------------------
+
+Additional resources are available at:
+
+-  `Website <http://cloudinary.com>`__
+-  `Documentation <http://cloudinary.com/documentation>`__
+-  `Knowledge Base <http://support.cloudinary.com/forums>`__
+-  `Documentation for Django
+   integration <http://cloudinary.com/documentation/django_integration>`__
+-  `Django image upload
+   documentation <http://cloudinary.com/documentation/django_image_upload>`__
+-  `Django image manipulation
+   documentation <http://cloudinary.com/documentation/django_image_manipulation>`__
+-  `Image transformations
+   documentation <http://cloudinary.com/documentation/image_transformations>`__
+
+Support
+-------
+
+You can `open an issue through
+GitHub <https://github.com/barakaVictor/django-gamma-cloudinary>`__.
+
