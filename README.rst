@@ -41,6 +41,7 @@ Quick start
 2. Add "gamma-cloudinary" and "cloudinary" to your INSTALLED_APPS setting like this
 
    .. code-block:: python
+   
    	INSTALLED_APPS = [
 		...
 		'cloudinary',
@@ -50,6 +51,7 @@ Quick start
 3. Next, you need to add Cloudinary credentials to settings.py
 
    .. code-block:: python
+   
    	CLOUDINARY_STORAGE = {
    		'CLOUD_NAME': 'your_cloud_name',
         	'API_KEY': 'your_api_key',
@@ -59,6 +61,7 @@ Quick start
 4. Set the STATIC_ROOT and MEDIA_ROOT as well as STATIC_URL and MEDIA_URL.
 
    .. code-block:: python
+   
    	MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 	STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 	
@@ -83,7 +86,9 @@ Usage with static assets
 
 To use this backend to serve static assets, use the ``StaticCloudinaryStorage`` class as the 
 STATICFILES_STORAGE in your settings file. The setting should be specified as follows
+
 .. code-block:: python
+
  STATICFILES_STORAGE = 'gamma_cloudinary.storage.StaticCloudinaryStorage'
 
 Afterwards, simply using the django ``static`` template tag would suffice to display your static files.
@@ -92,11 +97,15 @@ package defines a custom template tag name ``gamma_cl_static``. To use the tag f
 outlined below.
 
 1. load the template tag in the template that requires it like so
+
    .. code-block:: python
+   
     {% load gamma_cl_static %}
 
 2. Use the template tag providing it with the transformation options you desire like so
+
    .. code-block:: python
+   
     {% gamma_cl_static 'images/test.png' fetch_format='auto' quality='auto' dpr='auto' width='auto' responsive=True %}
    
    Consult the cloudinary documentation for details about which options are available while applying 
@@ -106,7 +115,9 @@ Usage with media assets
 ------------------------
 
 For usage with media assets, ensure that the DEFAULT_FILE_STORAGE backend is set to ``CloudinaryStorage`` like so
+
 .. code-block:: python
+
  DEFAULT_FILE_STORAGE = 'gamma_cloudinary.storage.CloudinaryStorage'
 
 After setting this setting, all media uploads will end up in a location characterized by a combination of the MEDIA_ROOT and the value
@@ -114,12 +125,16 @@ of ``CLOUDINARY_STORAGE['BASE_STORAGE_LOCATION']`` if this setting has been set.
 
 After defining the DEFAULT_FILE_STORAGE, proceed to display media assets using the django default method i.e.
 Assuming we have a model like this
+
 .. code-block:: python
+
  class TestModel(models.Model):
     image = models.ImageField(upload_to='images')
 
 Then displaying the uploaded image would be as simple as
+
 .. code-block:: python
+
  <img src="{{  test.image.url  }}"/>
 
 However, the above method is less flexible as it does not allow one to specify transformations to be applied to the asset
@@ -127,19 +142,25 @@ before rendering. To achieve this flexibility, one is required to use the ``clou
 the cloudinary package, a dependency of django-gamma-cloudinary. This is done following the steps below.
 
 1. Load the ``cloudinary`` template tags in your templates
+
    .. code-block:: python
+   
     {% load cloudinary %}
 
 2. Use the ``cloudinary_url`` tag passing it the name(public_id) of the resource to render. This name is easily
    retrievable from the name attribute of the django ``ImageField``
+   
    .. code-block:: python
+   
     <img src="{% cloudinary_url team.image.name fetch_format='auto' quality='auto' dpr='auto' width='auto' responsive=True default_image='placeholder' %}"/>
 
 Settings
 ------------------------
 
 Below are the settings utilized by this package with default values
+
 .. code-block:: python
+
  CLOUDINARY_STORAGE = {
     'CLOUD_NAME': None,  # required
     'API_KEY': None,  # required
