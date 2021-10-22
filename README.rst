@@ -174,16 +174,16 @@ Additional resources
 
 Additional resources are available at:
 
--  `Website <http://cloudinary.com>`__
--  `Documentation <http://cloudinary.com/documentation>`__
--  `Knowledge Base <http://support.cloudinary.com/forums>`__
--  `Documentation for Django
+-  `Cloudinary Website <http://cloudinary.com>`__
+-  `Cloudinary Documentation <http://cloudinary.com/documentation>`__
+-  `Cloudinary Knowledge Base <http://support.cloudinary.com/forums>`__
+-  `Cloudinary documentation for Django integration
    integration <http://cloudinary.com/documentation/django_integration>`__
--  `Django image upload
+-  `Cloudinary documentation for Django image upload
    documentation <http://cloudinary.com/documentation/django_image_upload>`__
--  `Django image manipulation
+-  `Cloudinary documentation for Django image manipulation
    documentation <http://cloudinary.com/documentation/django_image_manipulation>`__
--  `Image transformations
+-  `Cloudinary documentation for image transformations
    documentation <http://cloudinary.com/documentation/image_transformations>`__
 
 Support
