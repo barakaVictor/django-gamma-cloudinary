@@ -190,5 +190,5 @@ Support
 -------
 
 You can `open an issue through
-GitHub <https://github.com/barakaVictor/django-gamma-cloudinary>`__.
+GitHub <https://github.com/barakaVictor/django-gamma-cloudinary/issues>`__.
 
