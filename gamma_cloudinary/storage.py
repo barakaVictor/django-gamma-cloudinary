@@ -49,13 +49,10 @@ class CloudinaryStorage(Storage):
         media/static files are based. Forms part of the url that remains constant
         even as the endings for these urls change across separate files.
         """
-        root_folder = ""
-        if 'BASE_STORAGE_LOCATION' in settings.CLOUDINARY_STORAGE.keys():
-            root_folder = itemgetter('BASE_STORAGE_LOCATION')(settings.CLOUDINARY_STORAGE)
-        else:
-            root_folder = os.path.basename(self.base_location)
-        if settings.DEBUG:
-            return value_or_setting(self._base_url, settings.MEDIA_URL).lstrip('/')
+        root_folder = settings.CLOUDINARY_STORAGE.get(
+            'BASE_STORAGE_LOCATION',
+            os.path.basename(self.base_location)
+        )
         return os.path.join(
             root_folder,
             value_or_setting(self._base_url, settings.MEDIA_URL).lstrip('/'),
@@ -139,6 +136,10 @@ class CloudinaryStorage(Storage):
         Returns:
         string: the public_id of the file uploaded to cloudinary
         """
+        #Do not attempt to upload empty files
+        if content.size <= 0:
+            return None
+
         options = {
             'use_filename': True,
             'resource_type': get_resource_type(name),
@@ -182,7 +183,7 @@ class CloudinaryStorage(Storage):
             default_resource_type=get_resource_type(name)
         )
         if cloudinary_resource.resource_type == 'image' and 'quality' not in options:
-            options = dict({'quality': 'auto'}, **options)
+            options = dict({ 'quality': settings.CLOUDINARY_STORAGE.get('DEFAULT_IMAGE_QUALITY', 'auto')}, **options)
         return cloudinary_resource.build_url(**options)
 
     def upload_path(self, name):
