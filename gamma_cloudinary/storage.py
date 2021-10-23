@@ -181,7 +181,7 @@ class CloudinaryStorage(Storage):
             self.upload_path(url),
             default_resource_type=get_resource_type(name)
         )
-        if cloudinary_resource.resource_type == 'image' and not hasattr(options, 'quality'):
+        if cloudinary_resource.resource_type == 'image' and 'quality' not in options:
             options = dict({'quality': 'auto'}, **options)
         return cloudinary_resource.build_url(**options)
 
