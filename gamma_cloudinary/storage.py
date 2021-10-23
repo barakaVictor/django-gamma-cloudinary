@@ -26,7 +26,7 @@ class CloudinaryStorage(Storage):
 
     """
     def __init__(self, location=None, base_url=None, options=None):
-        self._location = location
+        self._base_location = location
         self._base_url = base_url
         setting_changed.connect(self._clear_cached_properties)
 
@@ -39,10 +39,16 @@ class CloudinaryStorage(Storage):
 
     @cached_property
     def base_location(self):
-        return value_or_setting(self._location, settings.MEDIA_ROOT)
+        """ The location where the media/static files are located """
+        return value_or_setting(self._base_location, settings.MEDIA_ROOT)
 
     @cached_property
     def base_url(self):
+        """
+        The base url upon which the final full urls to the individual
+        media/static files are based. Forms part of the url that remains constant
+        even as the endings for these urls change across separate files.
+        """
         root_folder = ""
         if 'BASE_STORAGE_LOCATION' in settings.CLOUDINARY_STORAGE.keys():
             root_folder = itemgetter('BASE_STORAGE_LOCATION')(settings.CLOUDINARY_STORAGE)
@@ -75,6 +81,10 @@ class CloudinaryStorage(Storage):
         return True
 
     def get_file_metadata(self, name):
+        """
+        Probe Cloudinary servers for metadata about a resource and
+        return this metadata e.g. file last modified time.
+        """
         response = requests.head(self.url(name))
         if response.status_code == 404:
             return None
@@ -82,6 +92,15 @@ class CloudinaryStorage(Storage):
         return response.headers
 
     def size(self, name):
+        """
+        Return the total size, in bytes, of the file specified by name.
+
+        Arguments:
+        name -- The name of the target resource on Cloudinary
+
+        Returns:
+        integer: The size in bytes of the target resource
+        """
         file_metada = self.get_file_metadata(name)
         if bool(file_metada) and hasattr(file_metada, 'Content-Length'):
             return file_metada['Content-Length']
@@ -95,8 +114,8 @@ class CloudinaryStorage(Storage):
         name -- The name of the file to open
         mode -- The mode used when opening the file
 
-        returns a File object or raises an exception
-        if the file does not exist
+        Returns:
+        file: A File object or raises an exception if the file does not exist
         """
         url = self.url(name)
         response = requests.get(url)
@@ -146,7 +165,7 @@ class CloudinaryStorage(Storage):
 
     #lesson learnt -> prefer to specify the resource_type when using the SDK as
     #opposed to using the auto option
-    def url(self, name):
+    def url(self, name, **options):
         """
         Get the full cloudinary url to a resource
 
@@ -158,15 +177,25 @@ class CloudinaryStorage(Storage):
 
         """
         url = filepath_to_uri(name).lstrip('/')
-        if settings.DEBUG:
-            return os.path.join(self.base_url, url)
         cloudinary_resource = cloudinary.CloudinaryResource(
             self.upload_path(url),
             default_resource_type=get_resource_type(name)
         )
-        return cloudinary_resource.url
+        if cloudinary_resource.resource_type == 'image' and not hasattr(options, 'quality'):
+            options = dict({'quality': 'auto'}, **options)
+        return cloudinary_resource.build_url(**options)
 
     def upload_path(self, name):
+        """
+        Appends the name of the target resource to the base_url to generate the
+        resource's public_id.
+
+        Arguments:
+        name(string): the name of the target resource.
+
+        Returns:
+        string: the result of concatenating the name of the resource and the base_url.
+        """
         name = name.replace('\\', '/').lstrip('/')
         if name.startswith(self.base_url.lstrip('/')):
             return name
@@ -174,6 +203,17 @@ class CloudinaryStorage(Storage):
 
 
     def get_available_name(self, name, max_length=None):
+        """
+        Return a filename that's free on the target storage system and
+        available for new content to be written to.
+
+        Arguments:
+        name(string): The prospective available name for the resource.
+        max_length(int): The acceptable length of the filename. Defaults to None.
+
+        Returns:
+        string: The availabl resource name for use.
+        """
         if max_length is None:
             return name
         # Truncate name if max_length exceeded.
@@ -300,7 +340,6 @@ class RewriteToCloudinaryUrlMixin:
                 else:
                     # We're using the posixpath module to mix paths and URLs conveniently.
                     source_name = name if os.sep == '/' else name.replace(os.sep, '/')
-                    #print(source_name)
                     target_name = posixpath.join(posixpath.dirname(source_name), url_parts.path)
 
                 transformed_url = self.url(target_name)
