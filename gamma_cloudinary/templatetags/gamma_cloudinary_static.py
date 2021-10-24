@@ -2,7 +2,6 @@ from cloudinary import CloudinaryResource
 from django import template
 from django.utils.safestring import mark_safe
 from django.contrib.staticfiles.storage import staticfiles_storage
-from gamma_cloudinary.utils import get_resource_type
 
 register = template.Library()
 

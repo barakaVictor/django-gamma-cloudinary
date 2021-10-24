@@ -2,8 +2,9 @@
 Django-Gamma-Cloudinary
 ========================
 
-django-gamma-cloudinary is a storage backend for integrating
-your static and media asset management with the Cloudinary platform.
+A django storage backend for integrating your static and media asset management with the Cloudinary platform.
+It applies some of the automatic image optimization capabilities provided by cloudinary. These optimization capabilities can be
+customized using the CLOUDINARY_STORAGE settings variable.
 
 .. image:: https://github.com/barakaVictor/django-gamma-cloudinary/workflows/Python%20package/badge.svg?branch=main
         :target: https://github.com/barakaVictor/django-gamma-cloudinary
@@ -166,8 +167,10 @@ Below are the settings utilized by this package with default values
 	    'CLOUD_NAME': None,  # required
 	    'API_KEY': None,  # required
 	    'API_SECRET': None,  # required
-	    'BASE_STORAGE_LOCATION': ...... #parent folder to keep all media and static assets under in cloudinary media library
+	    'BASE_STORAGE_LOCATION': '/base_storage_location/', #parent folder to keep all media and static assets under in cloudinary media library
 	    'SECURE': True,
+		'DEFAULT_IMAGE_QUALITY': 'auto', # the default cloudinary quality setting for delivering images. Options are:auto;best;good;eco;low.
+	 	'IMAGE_FETCH_FORMAT': 'auto',
 	 }
 
 Additional resources

@@ -183,7 +183,15 @@ class CloudinaryStorage(Storage):
             default_resource_type=get_resource_type(name)
         )
         if cloudinary_resource.resource_type == 'image' and 'quality' not in options:
-            options = dict({ 'quality': settings.CLOUDINARY_STORAGE.get('DEFAULT_IMAGE_QUALITY', 'auto')}, **options)
+            options = dict(
+                {
+                    'quality': settings.CLOUDINARY_STORAGE.get('DEFAULT_IMAGE_QUALITY', 'auto'),
+                    'fetch_format': settings.CLOUDINARY_STORAGE.get('IMAGE_FETCH_FORMAT', 'auto'),
+                    'width': 'auto',
+                    'dpr': 'auto'
+                },
+                **options
+                )
         return cloudinary_resource.build_url(**options)
 
     def upload_path(self, name):
