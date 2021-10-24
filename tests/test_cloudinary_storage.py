@@ -9,9 +9,9 @@ class CloudinaryStorageTestCase(SimpleTestCase):
     def setUp(self):
         self.storage = CloudinaryStorage()
 
-    @patch('gamma_cloudinary.storage.cloudinary.CloudinaryResource')
+    @patch('gamma_cloudinary.storage.cloudinary.CloudinaryResource.build_url')
     def test_url(self, mocked_resource):
-        mocked_resource.return_value.url = 'https://res.cloudinary.com/cloudname/raw/upload/v1/staticfiles/css/test.css'
+        mocked_resource.return_value = 'https://res.cloudinary.com/cloudname/raw/upload/v1/staticfiles/css/test.css'
         self.assertTrue('css/test.css' in self.storage.url('css/test.css'))
 
     @patch('gamma_cloudinary.storage.cloudinary.uploader.destroy')
@@ -59,7 +59,7 @@ class CloudinaryStorageTestCase(SimpleTestCase):
               "url": "http://res.cloudinary.com/demo/image/upload/c_crop,g_north,h_200,w_260/v1570979139/eneivicys42bq5f2jpn2.jpg",
               "secure_url": "https://res.cloudinary.com/demo/image/upload/c_crop,g_north,h_200,w_260/v1570979139/eneivicys42bq5f2jpn2.jpg" }]
         }
-        
+
         self.assertEqual(self.storage._save('css/test.css', ContentFile(b"these are bytes") ), 'eneivicys42bq5f2jpn2.jpg')
 
     @patch('gamma_cloudinary.storage.requests.get')
