@@ -44,7 +44,7 @@ Add "gamma-cloudinary" and "cloudinary" to your INSTALLED_APPS setting like this
 .. code-block:: python
 
 	INSTALLED_APPS = [
-		...
+		'...',
 		'cloudinary',
 		'gamma_cloudinary',
 	]
@@ -170,7 +170,7 @@ Below are the settings utilized by this package with default values
 	    'BASE_STORAGE_LOCATION': '/base_storage_location/', #parent folder to keep all media and static assets under in cloudinary media library
 	    'SECURE': True,
 		'DEFAULT_IMAGE_QUALITY': 'auto', # the default cloudinary quality setting for delivering images. Options are:auto;best;good;eco;low.
-	 	'IMAGE_FETCH_FORMAT': 'auto',
+		'IMAGE_FETCH_FORMAT': 'auto',
 	 }
 
 Additional resources
