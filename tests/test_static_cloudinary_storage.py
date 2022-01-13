@@ -2,7 +2,7 @@ import re
 from unittest import mock
 from django.conf import settings
 from django.test import SimpleTestCase, override_settings
-from gamma_cloudinary.storage.StaticCloudinaryStorage import StaticCloudinaryStorage
+from gamma_cloudinary.storage import StaticCloudinaryStorage
 from tests.helpers import find_files
 
 class StaticCloudinaryStorageTestCase(SimpleTestCase):
@@ -16,7 +16,7 @@ class StaticCloudinaryStorageTestCase(SimpleTestCase):
         self.assertTrue(instance.location==None)
         self.assertTrue(instance.base_location==settings.STATIC_ROOT)
 
-    @mock.patch('gamma_cloudinary.storage.CloudinaryStorage.CloudinaryStorage._save')
+    @mock.patch('gamma_cloudinary.storage.CloudinaryStorage._save')
     def test_post_process(self, mock_save):
 
         #find static files to pass to the post_process method

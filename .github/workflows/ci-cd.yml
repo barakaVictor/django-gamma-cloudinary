@@ -25,9 +25,13 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install dependencies
       run: |
+        sudo apt-get install libmagic1
         python -m pip install --upgrade pip
         python -m pip install coverage
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        if [ -f requirements.txt ]; then
+          sed -i '/^python-magic-bin/d' requirements.txt 
+          pip install -r requirements.txt; 
+        fi
     - name: Run tests 
       run: |
         coverage run --source='./gamma_cloudinary' manage.py test

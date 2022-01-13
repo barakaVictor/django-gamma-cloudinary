@@ -1,6 +1,6 @@
 import os
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 SECRET_KEY = 'test_secret_key'
 
@@ -13,9 +13,9 @@ INSTALLED_APPS = [
     'cloudinary',
     'gamma_cloudinary'
 ]
-    
+
 MIDDLEWARE = [
-    
+
 ]
 
 TEMPLATES = [
@@ -35,15 +35,16 @@ TEMPLATES = [
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-DEFAULT_FILE_STORAGE = 'gamma_cloudinary.storage.CloudinaryStorage.CloudinaryStorage'
+DEFAULT_FILE_STORAGE = 'gamma_cloudinary.storage.CloudinaryStorage'
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-STATICFILES_STORAGE = 'gamma_cloudinary.storage.StaticCloudinaryStorage.StaticCloudinaryStorage'
+STATICFILES_STORAGE = 'gamma_cloudinary.storage.StaticCloudinaryStorage'
 
 STATICFILES_DIRS = [
     os.path.join(TEST_ROOT, 'static')
 ]
+
 
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': 'test',
@@ -52,3 +53,5 @@ CLOUDINARY_STORAGE = {
     'BASE_STORAGE_LOCATION': '/test/',
     'SECURE': True
 }
+
+
