@@ -4,7 +4,6 @@ import requests
 import posixpath
 import cloudinary
 from datetime import datetime
-from operator import itemgetter
 from urllib.parse import unquote, urlparse
 from django.conf import settings
 from django.utils import timezone
@@ -152,8 +151,8 @@ class CloudinaryStorage(Storage):
             options['folder'] = folder
         response = cloudinary.uploader.upload(content, **options)
         if settings.MEDIA_ROOT == self.base_location and response['resource_type'] in ['image', 'video', 'audio']:
-            return "%s.%s"%(response['public_id'], response['format'])
-        return response['public_id']
+            response['public_id'] = "%s.%s"%(response['public_id'], response['format'])
+        return response['public_id'].split('media/', 1)[-1]
 
     def delete(self, name):
         assert name, "The name argument is not allowed to be empty."
@@ -192,6 +191,8 @@ class CloudinaryStorage(Storage):
                 },
                 **options
                 )
+        if 'ckeditor' in url:
+            print(url, cloudinary_resource.build_url(**options))
         return cloudinary_resource.build_url(**options)
 
     def upload_path(self, name):
