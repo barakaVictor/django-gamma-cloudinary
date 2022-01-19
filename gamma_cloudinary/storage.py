@@ -181,18 +181,16 @@ class CloudinaryStorage(Storage):
             self.upload_path(url),
             default_resource_type=get_resource_type(name)
         )
-        if cloudinary_resource.resource_type == 'image' and 'quality' not in options:
-            options = dict(
-                {
+        if cloudinary_resource.resource_type == 'image':
+            options = {
+                **{
                     'quality': settings.CLOUDINARY_STORAGE.get('DEFAULT_IMAGE_QUALITY', 'auto'),
                     'fetch_format': settings.CLOUDINARY_STORAGE.get('IMAGE_FETCH_FORMAT', 'auto'),
                     'width': 'auto',
                     'dpr': 'auto'
                 },
                 **options
-                )
-        if 'ckeditor' in url:
-            print(url, cloudinary_resource.build_url(**options))
+            }
         return cloudinary_resource.build_url(**options)
 
     def upload_path(self, name):
