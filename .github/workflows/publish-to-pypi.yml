@@ -6,7 +6,7 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Publish Package 📦 to PyPI
+name: release
 
 on:
   release:
@@ -25,13 +25,13 @@ jobs:
         python-version: '3.x'
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install twine
-        pip install build
+        python3 -m pip install --upgrade pip
+        python3 -m pip install --upgrade build
+        python3 -m pip install --upgrade twine
     - name: Build package
       run: |
-        python -m build
-        twine check dist/*
+        python3 -m build
+        python3 -m twine check dist/*
     - name: Publish package 📦 to PyPI
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
